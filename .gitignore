@@ -1,1 +1,18 @@
+# Folder cache Python
+__pycache__/
+*.pyc
+
+# Virtual environment
+myvenv/
+
+# File .env (JANGAN PERNAH commit API Key)
 .env
+
+# File sistem operasi
+.DS_Store
+
+# File gambar tes & hasil
+*.png
+*.jpg
+*.jpeg
+*.txt
