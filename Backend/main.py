@@ -1,9 +1,18 @@
 from fastapi import FastAPI, File, UploadFile
 from fastapi.responses import JSONResponse
 from services_ai import AI_Analyst
+from fastapi.middleware.cors import CORSMiddleware
+
 
 app = FastAPI()
 
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=["*"],
+    allow_credentials=True,
+    allow_methods=["*"],
+    allow_headers=["*"],
+)
 
 @app.post("/upload-image")
 def upload_image(file: UploadFile = File(...)):
