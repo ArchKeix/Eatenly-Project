@@ -3,6 +3,9 @@ from fastapi.responses import JSONResponse
 from services_ai import AI_Analyst
 from fastapi.middleware.cors import CORSMiddleware
 
+
+app = FastAPI()
+
 app.add_middleware(
     CORSMiddleware,
     allow_origins=["*"],
@@ -10,9 +13,6 @@ app.add_middleware(
     allow_methods=["*"],
     allow_headers=["*"],
 )
-
-app = FastAPI()
-
 
 @app.post("/upload-image")
 def upload_image(file: UploadFile = File(...)):
