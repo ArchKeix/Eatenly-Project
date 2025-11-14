@@ -21,9 +21,8 @@ os.environ["GOOGLE_API_KEY"] = os.getenv("GEMINI_API_KEY")
 # ----------------------------------------------------------------------- #
 
 
-# Define Fungsi AI Analyst
-def AI_Analyst(img_product: bytes) -> str:
-
+# Define Kompresi Image ke Base64
+def img_compress_b64(img_product: bytes) -> str:
     # Encode Img ke Base64 (Gemini hanya bisa terima base64 untuk image)
     img = Image.open(io.BytesIO(img_product))
     mime_type = Image.MIME.get(img.format)
@@ -33,6 +32,14 @@ def AI_Analyst(img_product: bytes) -> str:
     img.save(buffered, format=img.format)
     img_product = buffered.getvalue()
     img_b64 = base64.b64encode(img_product).decode("utf-8")
+    return img_b64
+
+
+# Define Fungsi AI Analyst
+def AI_Analyst(img_product: bytes) -> str:
+
+    # Compress & Convert image ke base64
+    img_b64 = img_compress_b64(img_product)
 
     # Inisialisasi model
     model = ChatGoogleGenerativeAI(
@@ -40,6 +47,7 @@ def AI_Analyst(img_product: bytes) -> str:
         temperature=0.5,
         max_output_tokens=5000,
     )
+
     # Inisialisasi Task sistem & human message
     messages = [
         SystemMessage(
@@ -51,11 +59,11 @@ def AI_Analyst(img_product: bytes) -> str:
             2. Kesehatan komposisi produk
             3. Rekomendasi konsumsi produk
             4. List referensi 3 sumber jurnal ilmiah terbaru yang digunakan
-               tanpa menyertakan penjelasannya
+               tanpa menyertakan penjelasannya dan format tanpa penomoran.
 
             Note:
             - Jika tidak ada nama merek, buat dugaan berdasarkan visual kemasan.
-            - Gunakan referensi dari jurnal ilmiah 3 tahun terakhir
+            - Gunakan referensi dari jurnal ilmiah rentang tahun 2023-2025
             - Berikan hasil analisa ringkas tapi lengkap, detail, dan valid.
             """
             )

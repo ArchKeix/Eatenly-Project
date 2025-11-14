@@ -2,6 +2,12 @@
 
 import streamlit as st
 import requests
+from dotenv import load_dotenv
+import os
+
+load_dotenv()
+
+BACKEND_URL = os.getenv("BACKEND_URL")
 
 st.title("Upload Gambar & Analisis AI")
 uploaded_file = st.file_uploader("Pilih gambar...", type=["png", "jpg", "jpeg"])
@@ -15,7 +21,7 @@ if uploaded_file is not None:
         # Kirim "telepon" ke backend
         try:
             response = requests.post(
-                "http://127.0.0.1:8000/upload-image", files=files, timeout=180
+                f"{BACKEND_URL}/upload-image", files=files, timeout=180
             )
 
             # Cek status code HTTP-nya
