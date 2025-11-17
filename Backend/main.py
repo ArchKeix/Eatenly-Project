@@ -30,7 +30,7 @@ app.add_middleware(
 def upload_image(file: UploadFile = File(...)):
     try:
         # Baca file gambar yang diupload
-        img_bytes = file.read()
+        img_bytes = file.file.read()
 
         # Hasil analisis
         analysis_result = AI_Analyst(img_bytes)
@@ -52,11 +52,11 @@ def upload_image(file: UploadFile = File(...)):
 
 
 @app.post("/scan-image")
-def scan_image(file: UploadFile = File(...)):
+async def scan_image(file: UploadFile = File(...)):
     try:
 
         # Baca file gambar yang diupload
-        img_bytes = file.read()
+        img_bytes = await file.read()
         # Debug ukuran (SANGAT PENTING)
         print("File size:", len(img_bytes), "bytes")
         print("MIME:", file.content_type)
