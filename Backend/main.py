@@ -30,7 +30,7 @@ app.add_middleware(
 def upload_image(file: UploadFile = File(...)):
     try:
         # Baca file gambar yang diupload
-        img_bytes = file.file.read()
+        img_bytes = file.read()
 
         # Hasil analisis
         analysis_result = AI_Analyst(img_bytes)
