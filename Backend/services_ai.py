@@ -23,14 +23,15 @@ os.environ["GOOGLE_API_KEY"] = os.getenv("GEMINI_API_KEY")
 
 # Define Kompresi Image ke Base64
 def img_compress_b64(img_product: bytes) -> str:
-    # Encode Img ke Base64 (Gemini hanya bisa terima base64 untuk image)
+
     img = Image.open(io.BytesIO(img_product))
-    mime_type = Image.MIME.get(img.format)
     MaxSize = (1024, 1024)
     img.thumbnail(MaxSize, Image.Resampling.LANCZOS)
     buffered = io.BytesIO()
     img.save(buffered, format=img.format)
     img_product = buffered.getvalue()
+
+    # Encode Img ke Base64 (Gemini hanya bisa terima base64 untuk image)
     img_b64 = base64.b64encode(img_product).decode("utf-8")
     return img_b64
 
@@ -54,17 +55,36 @@ def AI_Analyst(img_product: bytes) -> str:
             content=(
                 """
             Anda adalah asisten AI ahli dalam menganalisis produk konsumsi kemasan dari gambar.
-            Gunakan framework berikut untuk menjawab:
+            Berikut merupakan tugas anda dalam menganalisis produk konsumsi kemasan:
             1. Kandungan gizi/komposisi produk
             2. Kesehatan komposisi produk
             3. Rekomendasi konsumsi produk
-            4. List referensi 3 sumber jurnal ilmiah terbaru yang digunakan
+            4. List referensi 3 sumber jurnal ilmiah terbaru dari tahun 2023-2025 yang digunakan
                tanpa menyertakan penjelasannya dan format tanpa penomoran.
 
+            Template jawaban:
+            Nama produk : (jika ada merek, sebutkan nama mereknya. Jika tidak ada, buat dugaan berdasarkan visual kemasan)
+            
+            Rekomendasi konsumsi produk : (apakah direkomendasikan /tidak direkomendasikan untuk dikonsumsi)
+            
+            Status Halal: (berikan respon cukup produk ini halal/haram)
+            
+            Kandungan gizi/komposisi produk :
+            (Dibawah sini berisi analisisnya) 
+            
+            Kesehatan komposisi produk : 
+            (Dibawah sini berisi analisisnya)
+
+            Referensi : 
+            1. (judul jurnal ilmiah 1 beserta tahun)
+            2. (judul jurnal ilmiah 2 beserta tahun)
+            3. (judul jurnal ilmiah 3 beserta tahun)
+ 
             Note:
-            - Jika tidak ada nama merek, buat dugaan berdasarkan visual kemasan.
-            - Gunakan referensi dari jurnal ilmiah rentang tahun 2023-2025
+            - Selain foto produk konsumsi kemasan, berikan jawaban "Maaf, saya hanya dapat menganalisis produk konsumsi kemasan."
             - Berikan hasil analisa ringkas tapi lengkap, detail, dan valid.
+            - Pada template rekomendasi dan stasus halal/haram, berikan jawaban tegas singkat dan hanya satu kata ("direkomendasikan"/"tidak direkomendasikan" dan "halal"/"haram").
+            - Setiap point pada template jawaban harus terisi dan semuanya sesuaikan dengan template baik itu cara jawab, spasi,dan penulisan
             """
             )
         ),
@@ -80,7 +100,6 @@ def AI_Analyst(img_product: bytes) -> str:
     ]
 
     try:
-        print(f"\n--- Menjalankan AI ---")
         response = model.invoke(messages)
         response = re.sub(r"(\*\*|__)", "", response.content)
         # Normalisasi spasi
