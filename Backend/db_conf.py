@@ -41,5 +41,12 @@ result = riwayat_analisis_collection.insert_one(
     }
 )
 
+print("TESTTTTTTTTT")
+print("TESTTTTTTTTT")
+print("TESTTTTTTTTT")
+print("TESTTTTTTTTT")
+print("TESTTTTTTTTT")
+print("TESTTTTTTTTT")
+
 r = users_collect.find()
 print(list(r))
