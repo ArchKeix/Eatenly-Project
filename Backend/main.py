@@ -8,10 +8,14 @@ from services_ai import AI_Analyst
 from fastapi.middleware.cors import CORSMiddleware
 from PIL import Image
 import io
+from routers import register
 
 # ----------------------------------------------------------------------- #
 # Bangun FastAPI app
 app = FastAPI()
+
+# include router registrasi
+
 
 # Buat CORS Middleware sebagai izin akses komunikasi dari Frontend ke Backend
 app.add_middleware(
@@ -21,6 +25,8 @@ app.add_middleware(
     allow_methods=["*"],
     allow_headers=["*"],
 )
+
+app.include_router(register.router)
 
 
 # Buat endpoint untuk upload image

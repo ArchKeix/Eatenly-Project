@@ -1,4 +1,5 @@
-from pymongo import MongoClient
+# from pymongo import MongoClient
+from motor.motor_asyncio import AsyncIOMotorClient
 from dotenv import load_dotenv
 import os
 
@@ -9,7 +10,7 @@ load_dotenv()
 uri = os.getenv("mongo_url")
 
 # Connect to MongoDB
-client = MongoClient(uri)
+client = AsyncIOMotorClient(uri)
 
 # Database Eatenly_Project
 db = client["Eatenly_Project"]
@@ -41,12 +42,6 @@ result = riwayat_analisis_collection.insert_one(
     }
 )
 
-print("TESTTTTTTTTT")
-print("TESTTTTTTTTT")
-print("TESTTTTTTTTT")
-print("TESTTTTTTTTT")
-print("TESTTTTTTTTT")
-print("TESTTTTTTTTT")
 
-r = users_collect.find()
-print(list(r))
+# r = users_collect.find()
+# print(list(r))
