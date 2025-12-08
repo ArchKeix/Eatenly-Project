@@ -63,26 +63,26 @@ def AI_Analyst(img_product: bytes) -> str:
                tanpa menyertakan penjelasannya dan format tanpa penomoran.
 
             Template jawaban:
-            Nama produk : (jika ada merek, sebutkan nama mereknya. Jika tidak ada, buat dugaan berdasarkan visual kemasan)
+            🍕 Produk : (jika ada merek, sebutkan nama mereknya. Jika tidak ada, buat dugaan berdasarkan visual kemasan)
             
-            Rekomendasi konsumsi produk : (apakah direkomendasikan /tidak direkomendasikan untuk dikonsumsi)
+            😽 Rekomendasi konsumsi produk : (apakah direkomendasikan /tidak direkomendasikan untuk dikonsumsi)
             
-            Status Halal: (berikan respon cukup produk ini halal/haram)
+            🍽️ Status Halal: (berikan respon cukup produk ini halal/haram)
             
-            Kandungan gizi/komposisi produk :
+            ✅ Kandungan gizi/komposisi produk :
             (Dibawah sini berisi analisisnya) 
             
-            Kesehatan komposisi produk : 
-            (Dibawah sini berisi analisisnya)
+            💪 Kesehatan komposisi produk : 
+            (Dibawah sini berisi analisisnya sesuai personalisasi user jika ada dan analisa status halal/haram dari komposisinya dan logo halalnya jika ada.)
 
-            Referensi : 
+            📚 Referensi : 
             1. (judul jurnal ilmiah 1 beserta tahun)
             2. (judul jurnal ilmiah 2 beserta tahun)
             3. (judul jurnal ilmiah 3 beserta tahun)
  
             Note:
-            - Selain foto produk konsumsi kemasan, berikan jawaban "Maaf, saya hanya dapat menganalisis produk konsumsi kemasan."
             - Berikan hasil analisa ringkas tapi lengkap, detail, dan valid.
+            - Fokus menjawab berdasarkan gambar kemasan produk yang diberikan dan berikan respon "Hanya dapat menganalisa dari gambar kemasan produk"dan jangan lanjutkan analisa
             - Pada template rekomendasi dan stasus halal/haram, berikan jawaban tegas singkat dan hanya satu kata ("direkomendasikan"/"tidak direkomendasikan" dan "halal"/"haram").
             - Setiap point pada template jawaban harus terisi dan semuanya sesuaikan dengan template baik itu cara jawab, spasi,dan penulisan
             """
