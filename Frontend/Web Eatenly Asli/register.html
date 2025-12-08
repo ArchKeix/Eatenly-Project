@@ -1,33 +1,35 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Daftar - Eatenly</title>
     <link rel="stylesheet" href="style.css">
 </head>
+
 <body>
-    
+
     <section class="register-page">
         <div class="register-card">
             <div class="register-header">
                 <h1>Daftar</h1>
             </div>
 
-            <form action="personalisasi.html">
+            <form id="registerForm">
                 <div class="input-group">
                     <label>EMAIL</label>
-                    <input type="email" required>
+                    <input type="email" id="email" required>
                 </div>
 
                 <div class="input-group">
                     <label>Kata Sandi</label>
-                    <input type="password" required>
+                    <input type="password" id="password" required>
                 </div>
 
                 <div class="input-group">
                     <label>Konfirmasi Kata Sandi</label>
-                    <input type="password" required>
+                    <input type="password" id="confirmPassword" required>
                 </div>
 
                 <div class="input-group">
@@ -46,5 +48,7 @@
             </div>
         </div>
     </section>
+    <script src="register.js"></script>
 </body>
+
 </html>
