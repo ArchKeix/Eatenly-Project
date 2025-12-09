@@ -101,9 +101,12 @@ def AI_Analyst(img_product: bytes) -> str:
 
     try:
         response = model.invoke(messages)
+
         response = re.sub(r"(\*\*|__)", "", response.content)
+
         # Normalisasi spasi
         response = re.sub(r"[ \t]+", " ", response)
+
         # Rapikan line break
         response = re.sub(r"\n{2,}", "\n\n", response)
 

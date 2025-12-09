@@ -12,8 +12,8 @@ import os
 load_dotenv()
 
 # Get Backend URL dari .env
-BACKEND_URL = os.getenv("BACKEND_URL")
-
+# BACKEND_URL = os.getenv("BACKEND_URL")
+lokal = "http://127.0.0.1:8000"
 
 st.title("Upload Gambar & Analisis AI")
 uploaded_file = st.file_uploader("Pilih gambar...", type=["png", "jpg", "jpeg"])
@@ -26,9 +26,7 @@ if uploaded_file is not None:
 
         # Kirim "telepon" ke backend
         try:
-            response = requests.post(
-                f"{BACKEND_URL}/upload-image", files=files, timeout=30
-            )
+            response = requests.post(f"{lokal}/upload-image", files=files, timeout=30)
 
             # Cek status code HTTP-nya
             if response.status_code == 200:
@@ -62,7 +60,7 @@ if scan_input is not None:
     files = {"file": (scan_input.name, img_byts, scan_input.type)}
     try:
         response = requests.post(
-            f"{BACKEND_URL}/scan-image",
+            f"{lokal}/scan-image",
             files=files,
             timeout=30,
         )
