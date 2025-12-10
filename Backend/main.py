@@ -1,23 +1,9 @@
-# ----------------------------------------------------------------------- #
-#                               LIBRARIES                                 #
-# ----------------------------------------------------------------------- #
-
-from fastapi import FastAPI, File, UploadFile
-from fastapi.responses import JSONResponse
-from services_ai import AI_Analyst
+from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
-from PIL import Image
-import io
-from routers import register
+from routers import route_register
 
-# ----------------------------------------------------------------------- #
-# Bangun FastAPI app
 app = FastAPI()
 
-# include router registrasi
-
-
-# Buat CORS Middleware sebagai izin akses komunikasi dari Frontend ke Backend
 app.add_middleware(
     CORSMiddleware,
     allow_origins=["*"],
@@ -26,60 +12,5 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
-app.include_router(register.router)
-
-
-# Buat endpoint untuk upload image
-@app.post("/upload-image")
-
-# Define fungsi upload image
-def upload_image(file: UploadFile = File(...)):
-    try:
-        # Baca file gambar yang diupload
-        img_bytes = file.file.read()
-
-        # Hasil analisis
-        analysis_result = AI_Analyst(img_bytes)
-
-        # Return hasil analisis dalam bentuk JSON
-        return JSONResponse(
-            content={
-                "status": "success",
-                "analysis_result": analysis_result.get("analysis"),
-            }
-        )
-
-    except Exception as e:
-        # Jika terjadi error, kembalikan pesan error
-        return JSONResponse(
-            status_code=500,
-            content={"status": "error", "message": f"Analisis gagal: {e}"},
-        )
-
-
-@app.post("/scan-image")
-async def scan_image(file: UploadFile = File(...)):
-    try:
-
-        # Baca file gambar yang diupload
-        img_bytes = await file.read()
-        # Debug ukuran (SANGAT PENTING)
-        print("File size:", len(img_bytes), "bytes")
-        print("MIME:", file.content_type)
-        # Hasil analisis
-        analysis_result = AI_Analyst(img_bytes)
-
-        # Return hasil analisis dalam bentuk JSON
-        return JSONResponse(
-            content={
-                "status": "success",
-                "analysis_result": analysis_result.get("analysis"),
-            }
-        )
-
-    except Exception as e:
-        # Jika terjadi error, kembalikan pesan error
-        return JSONResponse(
-            status_code=500,
-            content={"status": "error", "message": f"Analisis gagal: {e}"},
-        )
+# ======= Include Routers =======
+app.include_router(route_register.router_regis)  # sesuaikan nama router
