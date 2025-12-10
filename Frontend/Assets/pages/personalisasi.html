@@ -1,13 +1,15 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Personalisasi - Eatenly</title>
     <link rel="stylesheet" href="../css/style.css">
 </head>
+
 <body>
-    
+
     <section class="personalization-page">
         <div class="personalization-card">
             <div class="card-top-logo">
@@ -19,35 +21,36 @@
                 <p>kami membutuhkan beberapa jawabanmu untuk personalisasi data</p>
             </div>
 
-            <form action="index.html">
+            <form id="personal-form">
                 <div class="input-group">
                     <label>Nama panggilan</label>
-                    <input type="text" required>
+                    <input type="text" id="nama-panggilan" name="nama-panggilan" required>
                 </div>
 
                 <div class="form-row">
                     <div class="input-group">
                         <label>Jenis kelamin</label>
-                        <select required>
-                            <option value="" disabled selected hidden></option> <option value="Laki-laki">Laki-laki</option>
+                        <select id="jenis-kelamin" name="jenis-kelamin" required>
+                            <option value="" disabled selected hidden></option>
+                            <option value="Laki-laki">Laki-laki</option>
                             <option value="Perempuan">Perempuan</option>
                         </select>
                     </div>
 
                     <div class="input-group">
                         <label>Umur</label>
-                        <input type="number" required>
+                        <input type="number" id="umur" name="umur" required>
                     </div>
                 </div>
 
                 <div class="input-group">
                     <label>Riwayat penyakit</label>
-                    <input type="text" required>
+                    <input type="text" id="riwayat-penyakit" name="riwayat-penyakit" required>
                 </div>
 
                 <div class="input-group">
                     <label>Preferensi</label>
-                    <input type="text" required>
+                    <input type="text" id="preferensi" name="preferensi" required>
                 </div>
 
                 <div class="btn-container-right">
@@ -58,6 +61,8 @@
 
         </div>
     </section>
-    
+
+    <script src="../js/personalisasi.js"></script>
 </body>
+
 </html>
