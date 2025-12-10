@@ -11,8 +11,3 @@ myvenv/
 # File sistem operasi
 .DS_Store
 
-# File gambar tes & hasil
-*.png
-*.jpg
-*.jpeg
-*.txt
