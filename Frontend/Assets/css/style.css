@@ -674,3 +674,241 @@ body {
 .dot.active {
     opacity: 1;
 }
+
+/* =========================================
+   STYLE FITUR KAMERA & HASIL SCAN
+   ========================================= */
+
+/* --- 1. Tombol Melayang (FAB) --- */
+.fab-camera {
+    position: fixed;
+    bottom: 30px;
+    right: 30px;
+    width: 70px;
+    background-color: #6482AD;
+    border-radius: 50%;
+    border: none;
+    box-shadow: 0 4px 15px rgba(100, 130, 173, 0.5);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    cursor: pointer;
+    z-index: 1000; /* Agar selalu di atas elemen lain */
+    transition: transform 0.2s;
+}
+
+.fab-camera:hover {
+    transform: scale(1.1);
+    background-color: #383854;
+}
+
+/* --- 2. Modal Overlay --- */
+.scan-modal {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.5);
+    display: none;
+    justify-content: center;
+    align-items: center;
+    z-index: 2000; /* Di atas FAB */
+}
+
+.scan-modal-content {
+    background-color: white;
+    padding: 30px;
+    border-radius: 20px;
+    width: 300px;
+    text-align: center;
+    animation: popup 0.3s ease-out;
+}
+
+@keyframes popup {
+    from { transform: scale(0.8); opacity: 0; }
+    to { transform: scale(1); opacity: 1; }
+}
+
+.scan-modal-content h3 {
+    margin-bottom: 20px;
+    color: #333;
+}
+
+.scan-options {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    margin-bottom: 15px;
+}
+
+option.btn {
+    padding: 12px;
+    border: 1px solid #6482AD;
+    background-color: white;
+    color: #6482AD;
+    border-radius: 10px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: 0.3s;
+}
+
+.option-btn:hover {
+    background-color: #6482AD;
+    color: white;
+}
+
+.close-modal {
+    background-color: none;
+    border: none;
+    color: #999;
+    cursor: pointer;
+    text-decoration: underline;
+    font-size: 12px;
+}
+
+/* --- 3. Kartu Hasil Analisis --- */
+.analysis-result-section {
+    margin-bottom: 30px;
+}
+
+.analysis-result-section h3 {
+    font-size: 16px;
+    font-weight: 700;
+    color: #000;
+    margin-bottom: 10px;
+}
+
+.result-card {
+    background-color: white;
+    padding: 20px;
+    border-radius: 20px;
+    box-shadow: 0 4px 10px rgba(0,0,0,0.05);
+    text-align: center;
+}
+
+.result-card p {
+    font-size: 16px;
+    color: #333;
+    line-height: 1.6;
+    margin-bottom: 20px;
+}
+
+.uploaded-preview {
+    width: 100%;
+    max-height: 200px;
+    background-color: #f0f0f0;
+    border-radius: 15px;
+    overflow: hidden;
+    margin-bottom: 20px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.uploaded-preview img {
+    width: 100%;
+    height: 100%;
+    object-fit: contain;
+}
+
+/* Overlay Gelap di Belakang Pop-up */
+.scan-modal-overlay {
+    position: fixed;
+    top: 0; left: 0;
+    width: 100%; height: 100%;
+    background-color: rgba(0, 0, 0, 0.6); /* Lebih gelap dikit */
+    display: none; /* Default sembunyi */
+    justify-content: center;
+    align-items: center;
+    z-index: 2000;
+    backdrop-filter: blur(3px); /* Efek blur di belakang (optional) */
+}
+
+/* Kotak Pop-up Utama (Transparan/Invisible Container) */
+.scan-modal-content {
+    width: 320px;
+    text-align: left;
+    animation: slideUp 0.3s ease-out;
+}
+
+@keyframes slideUp {
+    from { transform: translateY(20px); opacity: 0; }
+    to { transform: translateY(0); opacity: 1; }
+}
+
+
+/* =========================================
+   STYLE POP-UP MODAL (DARK THEME)
+   ========================================= */
+   
+/* Judul Kecil "Pilihan scan" */
+.modal-title {
+    color: #ccc; /* Abu-abu terang */
+    font-size: 14px;
+    font-weight: 600;
+    margin-bottom: 10px;
+    margin-left: 5px;
+}
+
+/* Container Pilihan (Kotak Biru Gelap) */
+.scan-options-container {
+    background-color: #383854; /* Warna Biru Gelap sesuai Tema */
+    border-radius: 15px;
+    overflow: hidden; /* Agar sudut tombol ikut melengkung */
+    display: flex;
+    flex-direction: column;
+}
+
+/* Tombol Pilihan (Kamera & File) */
+.scan-option-btn {
+    background: none;
+    border: none;
+    width: 100%;
+    padding: 20px;
+    display: flex;
+    align-items: center;
+    gap: 15px;
+    cursor: pointer;
+    transition: 0.2s;
+    text-align: left;
+}
+
+.scan-option-btn:hover {
+    background-color: #464669; /* Efek hover sedikit lebih terang */
+}
+
+/* Ikon di dalam tombol */
+.scan-option-btn i {
+    font-size: 20px;
+    color: white;
+    width: 30px; /* Lebar tetap agar teks sejajar */
+    text-align: center;
+}
+
+/* Teks di dalam tombol */
+.scan-option-btn span {
+    font-size: 16px;
+    color: white;
+    font-weight: 500;
+}
+
+/* Garis Pemisah di Tengah */
+.separator-line {
+    height: 1px;
+    background-color: rgba(255, 255, 255, 0.1); /* Garis putih tipis transparan */
+    margin: 0 15px; /* Jarak dari kiri kanan */
+}
+
+/* Tombol Batal di Bawah (Teks Saja) */
+.close-modal-text {
+    background: none;
+    border: none;
+    color: white;
+    width: 100%;
+    margin-top: 15px;
+    font-size: 14px;
+    cursor: pointer;
+    text-decoration: underline;
+    opacity: 0.8;
+}
