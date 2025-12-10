@@ -14,7 +14,7 @@ body {
     margin: 0;
     width: 100%;
     box-sizing: border-box;
-    background-image: linear-gradient(rgba(20, 23, 63), rgba(31, 97, 183, 0.5)), url('Snack.png');
+    background-image: linear-gradient(rgba(20, 23, 63), rgba(31, 97, 183, 0.5)), url('../img/Snack.png');
     background-position: start;
     background-size: cover;
     border-radius: 0px 0px 10px 10px;
@@ -417,7 +417,7 @@ nav {
     -moz-appearance: none;    
 
     /* Menambah panah pada kolom jenis kelamin */
-    background-image: url('inverted-triangle.png');
+    background-image: url('../img/inverted-triangle.png');
     background-repeat: no-repeat;
     background-position: right 15px center;
     background-size: 15px auto;
@@ -462,7 +462,7 @@ body {
 /* --- 1. Header Dashboard --- */
 .dashboard-header {
     width: 100%;
-    background-image: linear-gradient(rgba(20, 23, 63, 0.9), rgba(31, 97, 183, 0.6)), url('Snack.png');
+    background-image: linear-gradient(rgba(20, 23, 63, 0.9), rgba(31, 97, 183, 0.6)), url('../img/Snack.png');
     background-size: cover;
     background-position: center;
 
