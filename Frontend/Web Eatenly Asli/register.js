@@ -6,36 +6,30 @@ document.getElementById('registerForm').addEventListener('submit', async (e) => 
   const confirmPassword = document.getElementById('confirmPassword').value;
 
   if (password !== confirmPassword) {
-    alert('Password tidak sama!');
+    alert('Password dan konfirmasi tidak sama!');
     return;
   }
 
   try {
-    const response = await fetch('http://localhost:8000/auth/signup', {
+    const response = await fetch('http://localhost:8000/register/', {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
       },
       body: JSON.stringify({
         email: email,
-        username: email.split('@')[0],
         password: password,
+        confirm_password: confirmPassword
       }),
     });
 
+    const data = await response.json();
+
     if (response.ok) {
-      const data = await response.json();
-      alert('Registrasi berhasil untuk ' + data.email);
+      alert('Registrasi berhasil untuk ' + data.email );
       window.location.href = 'personalisasi.html';
     } else {
-      let errorMessage = '';
-      try {
-        const error = await response.json();
-        errorMessage = error.detail || JSON.stringify(error);
-      } catch (parseErr) {
-        errorMessage = 'Tidak bisa membaca error dari server.';
-      }
-      alert('Error: ' + errorMessage);
+      alert('Error: ' + (data.detail || JSON.stringify(data)));
     }
   } catch (error) {
     console.error(error);
