@@ -1,8 +1,6 @@
-# routers/register.py
-
 from fastapi import APIRouter, HTTPException, status
 from models.user_model import UserSignup
-from services.services_register import signup
+from services.service_register import signup
 
 router_regis = APIRouter(prefix="/register", tags=["register"])
 
