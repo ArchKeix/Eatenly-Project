@@ -890,3 +890,67 @@ option.btn {
     text-decoration: underline;
     opacity: 0.8;
 }
+
+/* --- CSS UNTUK LIST PENYAKIT & PREFERENSI --- */
+
+/* Agar item berbaris ke bawah */
+.list-item {
+    display: block;      /* Membuat tiap item jadi baris baru */
+    margin-bottom: 4px;  /* Jarak antar item */
+    font-size: 14px;     /* Sesuaikan ukuran font */
+    font-weight: 700;
+}
+
+/* Class untuk menyembunyikan item lebih dari 3 */
+.hidden-item {
+    display: none;
+}
+
+/* Style tombol Show All agar terlihat bisa diklik */
+.show-all {
+    cursor: pointer;
+    font-weight: 600;
+    color: #8faaff;
+    text-decoration: none;
+}
+
+.show-all:hover {
+    text-decoration: underline;
+    color: #fff;
+}
+
+/* --- STYLE HASIL ANALISIS AGAR RAPI --- */
+.result-text-container {
+    text-align: left; /* rata kiri agar format teks nya enak di liat */
+    padding: 10px;
+    background-color: #f8f9fa; 
+    border-radius: 10px;
+    margin-top: 20px;
+}
+
+#resultText {
+    font-size: 14px;
+    color: #333;
+    line-height: 1.6; /* Jarak antar baris biar tidak dempet */
+    white-space: pre-wrap; /* Agar spasi & enter dari AI terbaca */
+}
+
+/* --- STYLE WARNA OTOMATIS HASIL AI --- */
+
+/* Warna Merah (Untuk Haram / Tidak Direkomendasikan) */
+.status-red {
+    color: #dc3545;       /* Merah terang standar UI */
+    font-weight: 800;     /* Sangat tebal */
+    background-color: #ffe6e6; /* Latar merah muda tipis biar jelas */
+    padding: 2px 6px;     /* Sedikit jarak biar rapi */
+    border-radius: 4px;   /* Sudut melengkung dikit */
+}
+
+/* Warna Hijau (Untuk Halal / Direkomendasikan) */
+.status-green {
+    color: #198754;       /* Hijau segar */
+    font-weight: 800;
+    background-color: #e6ffed; /* Latar hijau muda tipis */
+    padding: 2px 6px;
+    border-radius: 4px;
+}

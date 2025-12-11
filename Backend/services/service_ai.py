@@ -38,7 +38,7 @@ def img_compress_b64(img_product: bytes) -> str:
 
 
 # Define Fungsi AI Analyst
-def AI_Analyst(img_product: bytes, personalize: str) -> str:
+async def AI_Analyst(img_product: bytes, personalize: str) -> str:
 
     # Compress & Convert image ke base64
     img_b64 = img_compress_b64(img_product)
@@ -70,7 +70,7 @@ def AI_Analyst(img_product: bytes, personalize: str) -> str:
             
             🍽️ Status Halal: (berikan respon cukup produk ini halal/haram)
             
-            ✅ Kandungan gizi/komposisi produk :
+            👨‍🔬 Kandungan gizi/komposisi produk :
             (Dibawah sini berisi analisisnya berdasarkan dari komposisi produk yang terlihat pada gambar kemasan.) 
             
             💪 Kesehatan komposisi produk : 
