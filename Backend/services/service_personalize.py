@@ -11,8 +11,16 @@ async def save_personalize(id_user: str, payload: UserPersonalize):
 
     if result.modified_count == 0:
         return {"message": "User tidak ditemukan atau tidak ada perubahan data."}
-
+    nama_panggilan = personalize_data.get("nama_panggilan")
+    umur = personalize_data.get("umur")
+    jenis_kelamin = personalize_data.get("jenis_kelamin")
+    riwayat_penyakit = personalize_data.get("riwayat_penyakit")
+    preferensi = personalize_data.get("preferensi")
     return {
         "message": "Data personalisasi pengguna berhasil disimpan.",
-        "personalize": personalize_data,
+        "nama_panggilan": nama_panggilan,
+        "umur": umur,
+        "jenis_kelamin": jenis_kelamin,
+        "riwayat_penyakit": riwayat_penyakit,
+        "preferensi": preferensi,
     }

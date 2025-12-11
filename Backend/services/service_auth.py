@@ -37,8 +37,8 @@ async def login(payload: UserLogin):
     token_payload = {
         "id_user": user["id_user"],
         "email": user["email"],
-        "exp": datetime.datetime.datetime() + datetime.timedelta(hours=0.5),
-        "iat": datetime.datetime.datetime(),
+        "exp": datetime.datetime.utcnow() + datetime.timedelta(hours=0.5),
+        "iat": datetime.datetime.utcnow(),
     }
 
     token = jwt.encode(token_payload, SECRET_KEY, algorithm=ALGORITHM)

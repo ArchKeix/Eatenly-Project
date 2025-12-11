@@ -20,7 +20,7 @@ document.addEventListener('DOMContentLoaded', () => {
         return;
       }
 
-      const response = await fetch(`http://localhost:8000/personalize/${id_user}/preference`, {
+      const response = await fetch(`http://localhost:8000/personalize/${id_user}`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
