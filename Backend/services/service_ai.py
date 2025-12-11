@@ -6,6 +6,7 @@ from langchain_google_genai import ChatGoogleGenerativeAI
 from langchain.messages import SystemMessage, HumanMessage
 from dotenv import load_dotenv
 from PIL import Image
+from models.user_model import UserPreference
 import base64
 import os
 import re
@@ -48,12 +49,19 @@ def AI_Analyst(img_product: bytes) -> str:
         temperature=0.5,
         max_output_tokens=5000,
     )
-
+    personalization = f"""
+    User Personalization:
+    - Nama Panggilan: {UserPreference.nama_panggilan}
+    - Umur: {UserPreference.umur}
+    - Jenis Kelamin: {UserPreference.jenis_kelamin}
+    - Riwayat Penyakit: {UserPreference.riwayat_penyakit}
+    - Preferensi: {UserPreference.preferensi}
+    """
     # Inisialisasi Task sistem & human message
     messages = [
         SystemMessage(
             content=(
-                """
+                f"""
             Anda adalah asisten AI ahli dalam menganalisis produk konsumsi kemasan dari gambar.
             Berikut merupakan tugas anda dalam menganalisis produk konsumsi kemasan:
             1. Kandungan gizi/komposisi produk
