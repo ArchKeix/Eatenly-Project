@@ -12,7 +12,3 @@ myvenv/
 .DS_Store
 
 # File gambar tes & hasil
-*.png
-*.jpg
-*.jpeg
-*.txt
