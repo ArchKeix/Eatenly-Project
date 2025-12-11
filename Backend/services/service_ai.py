@@ -6,10 +6,11 @@ from langchain_google_genai import ChatGoogleGenerativeAI
 from langchain.messages import SystemMessage, HumanMessage
 from dotenv import load_dotenv
 from PIL import Image
-import base64
 import os
+import base64
 import re
 import io
+
 
 # ----------------------------------------------------------------------- #
 
@@ -37,7 +38,7 @@ def img_compress_b64(img_product: bytes) -> str:
 
 
 # Define Fungsi AI Analyst
-def AI_Analyst(img_product: bytes) -> str:
+def AI_Analyst(img_product: bytes, personalize: str) -> str:
 
     # Compress & Convert image ke base64
     img_b64 = img_compress_b64(img_product)
@@ -53,7 +54,7 @@ def AI_Analyst(img_product: bytes) -> str:
     messages = [
         SystemMessage(
             content=(
-                """
+                f"""
             Anda adalah asisten AI ahli dalam menganalisis produk konsumsi kemasan dari gambar.
             Berikut merupakan tugas anda dalam menganalisis produk konsumsi kemasan:
             1. Kandungan gizi/komposisi produk
@@ -70,10 +71,10 @@ def AI_Analyst(img_product: bytes) -> str:
             🍽️ Status Halal: (berikan respon cukup produk ini halal/haram)
             
             ✅ Kandungan gizi/komposisi produk :
-            (Dibawah sini berisi analisisnya) 
+            (Dibawah sini berisi analisisnya berdasarkan dari komposisi produk yang terlihat pada gambar kemasan.) 
             
             💪 Kesehatan komposisi produk : 
-            (Dibawah sini berisi analisisnya sesuai personalisasi user jika ada dan analisa status halal/haram dari komposisinya dan logo halalnya jika ada.)
+            (Dibawah sini berisi analisisnya sesuai {personalize} user)
 
             📚 Referensi : 
             1. (judul jurnal ilmiah 1 beserta tahun)
