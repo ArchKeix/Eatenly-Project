@@ -6,11 +6,11 @@ from langchain_google_genai import ChatGoogleGenerativeAI
 from langchain.messages import SystemMessage, HumanMessage
 from dotenv import load_dotenv
 from PIL import Image
-from models.user_model import UserPreference
-import base64
 import os
+import base64
 import re
 import io
+
 
 # ----------------------------------------------------------------------- #
 
@@ -38,7 +38,7 @@ def img_compress_b64(img_product: bytes) -> str:
 
 
 # Define Fungsi AI Analyst
-def AI_Analyst(img_product: bytes) -> str:
+def AI_Analyst(img_product: bytes, personalize: str) -> str:
 
     # Compress & Convert image ke base64
     img_b64 = img_compress_b64(img_product)
@@ -49,14 +49,7 @@ def AI_Analyst(img_product: bytes) -> str:
         temperature=0.5,
         max_output_tokens=5000,
     )
-    personalization = f"""
-    User Personalization:
-    - Nama Panggilan: {UserPreference.nama_panggilan}
-    - Umur: {UserPreference.umur}
-    - Jenis Kelamin: {UserPreference.jenis_kelamin}
-    - Riwayat Penyakit: {UserPreference.riwayat_penyakit}
-    - Preferensi: {UserPreference.preferensi}
-    """
+
     # Inisialisasi Task sistem & human message
     messages = [
         SystemMessage(
@@ -78,10 +71,10 @@ def AI_Analyst(img_product: bytes) -> str:
             🍽️ Status Halal: (berikan respon cukup produk ini halal/haram)
             
             ✅ Kandungan gizi/komposisi produk :
-            (Dibawah sini berisi analisisnya) 
+            (Dibawah sini berisi analisisnya berdasarkan dari komposisi produk yang terlihat pada gambar kemasan.) 
             
             💪 Kesehatan komposisi produk : 
-            (Dibawah sini berisi analisisnya sesuai personalisasi user jika ada dan analisa status halal/haram dari komposisinya dan logo halalnya jika ada.)
+            (Dibawah sini berisi analisisnya sesuai {personalize} user)
 
             📚 Referensi : 
             1. (judul jurnal ilmiah 1 beserta tahun)

@@ -15,7 +15,8 @@ class UserLogin(BaseModel):  # -> Untuk Login
     password: str
 
 
-class UserPreference(BaseModel):  # -> Untuk Personalisasi User (saat isi formulir)
+class UserPersonalize(BaseModel):  # -> Untuk Personalisasi User (saat isi formulir)
+    id_user: str
     nama_panggilan: str
     umur: str
     jenis_kelamin: str

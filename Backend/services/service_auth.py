@@ -37,8 +37,8 @@ async def login(payload: UserLogin):
     token_payload = {
         "id_user": user["id_user"],
         "email": user["email"],
-        "exp": datetime.datetime.utcnow() + datetime.timedelta(hours=0.5),
-        "iat": datetime.datetime.utcnow(),
+        "exp": datetime.datetime.datetime() + datetime.timedelta(hours=0.5),
+        "iat": datetime.datetime.datetime(),
     }
 
     token = jwt.encode(token_payload, SECRET_KEY, algorithm=ALGORITHM)
@@ -49,9 +49,4 @@ async def login(payload: UserLogin):
         "token": token,
         "id_user": user["id_user"],
         "email": user["email"],
-        "nama_panggilan": user.get("nama_panggilan"),
-        "umur": user.get("umur"),
-        "jenis_kelamin": user.get("jenis_kelamin"),
-        "riwayat_penyakit": user.get("riwayat_penyakit"),
-        "preferensi": user.get("preferensi"),
     }
