@@ -318,28 +318,6 @@ nav {
     font-weight: 600;
 }
 
-/* Style Verification Box */
-.verification-box {
-    display: flex;
-    gap: 10px;
-}
-
-.verification-box input {
-    flex: 1;
-}
-
-.btn-verify {
-    background-color: transparent;
-    border: 1px solid #6482AD;
-    color: #4a90e2;
-    padding: 0 15px;
-    border-radius: 10px;
-    font-size: 12px;
-    font-weight: 600;
-    cursor: pointer;
-    display: flex;
-    align-items: center;
-}
 
 /* =========================================
    STYLE HALAMAN PERSONALISASI
