@@ -1,6 +1,6 @@
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
-from routers import route_register
+from routers import route_register, route_personalize, route_auth
 
 app = FastAPI()
 
@@ -14,3 +14,5 @@ app.add_middleware(
 
 # ======= Include Routers =======
 app.include_router(route_register.router_regis)  # sesuaikan nama router
+app.include_router(route_personalize.router_personalize)
+app.include_router(route_auth.router_auth)

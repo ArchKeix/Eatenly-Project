@@ -1,0 +1,125 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dashboard - Eatenly</title>
+    <link rel="stylesheet" href="..//css/style.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+</head>
+<body>
+
+    <section class="dashboard-header">
+        <div class="top-bar">
+            <h3>EATENLY</h3>
+            <a href="/Frontend/index.html" class="logout-link">Keluar</a>
+        </div>
+        
+        <div class="welcome-text">
+            <h1>Hi, selamat pagi User</h1>
+            <p>Sini aku bantu mencocokan jajananmu dengan kondisimu saat ini</p>
+        </div>
+        
+        <div class="header-help">
+            <p>Have a problem? <a href="#">Help</a></p>
+        </div>
+    </section>
+
+    <section class="dashboard-content">
+        
+        <div class="section-title">
+            <h3>Personalisasi mu</h3>
+            <a href="personalisasi.html">Edit personalisasi</a>
+        </div>
+
+        <div class="stats-row">
+            <div class="card-white">
+                <span class="label">USIA</span>
+                <span class="value">3 TAHUN</span>
+            </div>
+            <div class="card-white">
+                <span class="label">Jenis kelamin</span>
+                <span class="value">LAKI - LAKI</span>
+            </div>
+        </div>
+
+        <div class="stats-row">
+            <div class="card-dark">
+                <span class="label">Riwayat Penyakit</span>
+                <span class="value-large">Diabetes Sample</span>
+                <a href="#" class="show-all">Show all</a>
+            </div>
+            <div class="card-dark">
+                <span class="label">Preferensi mu</span>
+                <span class="value-large">HALAL Sample</span>
+                <a href="#" class="show-all">Show all</a>
+            </div>
+        </div>
+
+        <div class="analysis-result-section" id="analysisResult" style="display: none;">
+            <h3>Hasil analisis</h3>
+            <div class="result-card">
+                <div class="uploaded-preview">
+                    <img id="previewImage" src="" alt="Preview Makanan">
+                </div>
+                <div class="result-text-container">
+                    <p id="resultText">Sedang menganalisis...</p>
+                </div>
+            </div>
+        </div>
+
+        <div class="history-section">
+            <h3>Riwayat scan</h3>
+            <div class="history-container">
+                <div class="history-grid">
+                    <div class="history-card">
+                        <h4>Bengbeng</h4>
+                        <p>Makanan ini baik karena rasanya manis...</p>
+                    </div>
+                    <div class="history-card">
+                        <h4>Chitato</h4>
+                        <p>Kurangi konsumsi karena mengandung MSG...</p>
+                    </div>
+                </div>
+                <div class="pagination-dots">
+                    <span class="dot active"></span><span class="dot"></span><span class="dot"></span>
+                </div>
+            </div>
+        </div>
+
+    </section>
+
+    <button class="fab-camera" onclick="openScanModal()">
+        <svg width="30" height="30" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <path d="M12 12C14.7614 12 17 9.76142 17 7C17 4.23858 14.7614 2 12 2C9.23858 2 7 4.23858 7 7C7 9.76142 9.23858 12 12 12Z" fill="white" fill-opacity="0"/>
+            <path d="M20 4H16.83L15.12 2.17C14.93 1.96 14.66 1.85 14.39 1.86H9.61C9.34 1.86 9.07 1.97 8.88 2.17L7.17 4H4C2.9 4 2 4.9 2 6V18C2 19.1 2.9 20 4 20H20C21.1 20 22 19.1 22 18V6C22 4.9 21.1 4 20 4ZM12 17C9.24 17 7 14.76 7 12C7 9.24 9.24 7 12 7C14.76 7 17 9.24 17 12C17 14.76 14.76 17 12 17Z" fill="white"/>
+            <path d="M12 9C10.34 9 9 10.34 9 12C9 13.66 10.34 15 12 15C13.66 15 15 13.66 15 12C15 10.34 13.66 9 12 9Z" fill="white"/>
+        </svg>
+    </button>
+
+    <div class="scan-modal-overlay" id="scanModal">
+        <div class="scan-modal-content">
+            <h3 class="modal-title">Pilihan scan</h3>
+            
+            <div class="scan-options-container">
+                <button class="scan-option-btn top-option" onclick="triggerCamera()">
+                    <i class="fas fa-camera"></i> <span>Scan dengan kamera</span>
+                </button>
+                
+                <div class="separator-line"></div>
+
+                <button class="scan-option-btn bottom-option" onclick="triggerGallery()">
+                    <i class="fas fa-paperclip"></i> <span>Pilih dari file</span>
+                </button>
+            </div>
+            
+            <button class="close-modal-text" onclick="closeScanModal()">Batal</button>
+        </div>
+    </div>
+
+    <input type="file" id="cameraInput" accept="image/*" capture="environment" style="display: none;" onchange="handleFileSelect(this)">
+    <input type="file" id="galleryInput" accept="image/*" style="display: none;" onchange="handleFileSelect(this)">
+
+    <script src="../js/dashboard.js"></script>
+</body>
+</html>
