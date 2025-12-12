@@ -38,8 +38,8 @@ async def set_ai(
         riwayat = user.get("riwayat_penyakit")
 
         personalize = f"""
-        Berikut adalah preferensi user: {pref}
-        Berikut adalah riwayat penyakit user: {riwayat}
+        1. Preferensi user: {pref}
+        2. Riwayat penyakit user: {riwayat}
         """
         answer = await AI_Analyst(img_product, personalize)
 

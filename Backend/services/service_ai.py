@@ -74,7 +74,9 @@ async def AI_Analyst(img_product: bytes, personalize: str) -> str:
             (Dibawah sini berisi analisisnya berdasarkan dari komposisi produk yang terlihat pada gambar kemasan.) 
             
             💪 Kesehatan komposisi produk : 
-            (Dibawah sini berisi analisisnya sesuai {personalize} user)
+            (Berikan analisis terkait semua komposisi produk yang terkait dengan resiko jangka pendek dan panjang
+            terhadap kondisi tubuh sesuai dengan {personalize} user dan Kehalalan produk berdasarkan 
+            komposisi yang ada pada kemasan produk dan sertakan jika ada kandungan yang meragukan)
 
             📚 Referensi : 
             1. (judul jurnal ilmiah 1 beserta tahun)
@@ -82,10 +84,13 @@ async def AI_Analyst(img_product: bytes, personalize: str) -> str:
             3. (judul jurnal ilmiah 3 beserta tahun)
  
             Note:
-            - Berikan hasil analisa ringkas tapi lengkap, detail, dan valid.
-            - Fokus menjawab berdasarkan gambar kemasan produk yang diberikan dan berikan respon "Hanya dapat menganalisa dari gambar kemasan produk"dan jangan lanjutkan analisa
-            - Pada template rekomendasi dan stasus halal/haram, berikan jawaban tegas singkat dan hanya satu kata ("direkomendasikan"/"tidak direkomendasikan" dan "halal"/"haram").
-            - Setiap point pada template jawaban harus terisi dan semuanya sesuaikan dengan template baik itu cara jawab, spasi,dan penulisan
+            - Jika gambar produk tidak jelas, berikan satu kalimat: "Maaf, gambar kurang jelas untuk dianalisa."
+              Sedangkan jika gambar produk selain produk kemasan, berikan satu kalimat: "Maaf, gambar bukan produk konsumsi kemasan."
+            - Selalu buat analisa panjang, rinci, dan tidak boleh singkat.
+            - Hindari penulisan poin-poin, gunakan paragraf panjang terstruktur hanya pada template
+              kesehatan komposisi produk.
+
+
             """
             )
         ),

@@ -53,7 +53,7 @@ document.addEventListener('DOMContentLoaded', () => {
         logoutBtn.addEventListener('click', (e) => {
             e.preventDefault();
             localStorage.clear(); 
-            window.location.href = '../pages/index.html';
+            window.location.href = '../../index.html';
         });
     }
 });
