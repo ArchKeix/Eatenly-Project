@@ -40,10 +40,10 @@ async def img_compress_b64(img_product: bytes) -> str:
 def parse_to_json_structure(text: str) -> dict:
     """
     Parser Logik: Mengubah teks mentah dari AI menjadi Dictionary (JSON Object).
-    Fokus mengambil 3 poin: Nama, Halal, Rekomendasi.
+    Regex diperbarui untuk menangkap format dengan EMOJI atau TANPA EMOJI.
     """
 
-    # Default values (Placeholder jika AI gagal mendeteksi)
+    # Default values
     parsed_data = {
         "product_name": "Tidak Teridentifikasi",
         "halal_status": "Unknown",
@@ -51,18 +51,24 @@ def parse_to_json_structure(text: str) -> dict:
     }
 
     # 1. Ambil Nama Produk
-    # Regex mencari teks setelah "Nama Produk :" sampai baris baru
-    match_prod = re.search(r"Nama Produk\s*:\s*(.*)", text, re.IGNORECASE)
+    # Regex: Mencari '🍕 Produk :' ATAU 'Nama Produk :' ATAU 'Produk :'
+    # (?: ... ) adalah non-capturing group untuk alternatif pilihan
+    match_prod = re.search(r"(?:🍕|Nama)?\s*Produk\s*:\s*(.*)", text, re.IGNORECASE)
     if match_prod:
         parsed_data["product_name"] = match_prod.group(1).strip()
 
     # 2. Ambil Status Halal
-    match_halal = re.search(r"Status Halal\s*:\s*(.*)", text, re.IGNORECASE)
+    # Regex: Mencari '🍽️ Status Halal:' ATAU 'Status Halal:'
+    match_halal = re.search(r"(?:🍽️|🍽)?\s*Status Halal\s*:\s*(.*)", text, re.IGNORECASE)
     if match_halal:
         parsed_data["halal_status"] = match_halal.group(1).strip()
 
-    # 3. Ambil Rekomendasi (Singkat)
-    match_rek = re.search(r"Rekomendasi\s*:\s*(.*)", text, re.IGNORECASE)
+    # 3. Ambil Rekomendasi
+    # Regex: Mencari '😽 Rekomendasi konsumsi produk :' ATAU 'Rekomendasi :'
+    # Bagian '(?:konsumsi produk)?' membuatnya opsional
+    match_rek = re.search(
+        r"(?:😽)?\s*Rekomendasi\s*(?:konsumsi produk)?\s*:\s*(.*)", text, re.IGNORECASE
+    )
     if match_rek:
         parsed_data["recommendation"] = match_rek.group(1).strip()
 
@@ -97,11 +103,11 @@ async def AI_Analyst(img_product: bytes, personalize: str) -> str:
 
             Template Teks:
             🍕 Produk : (jika ada merek, sebutkan nama mereknya. Jika tidak ada, buat dugaan berdasarkan visual kemasan)
-            
-            😽 Rekomendasi konsumsi produk : (berikan respon direkomendasikan /tidak direkomendasikan )
-            
-            🍽️ Status Halal: (berikan respon halal/haram)
-            
+
+            😽 Rekomendasi konsumsi produk : (berikan respon hanya direkomendasikan /tidak direkomendasikan )
+
+            🍽️ Status Halal: (berikan respon hanya halal/haram)
+
             👨‍🔬 Kandungan gizi/komposisi produk :
             (Dibawah sini berisi analisisnya berdasarkan dari komposisi produk yang terlihat pada gambar kemasan.) 
             
@@ -117,7 +123,8 @@ async def AI_Analyst(img_product: bytes, personalize: str) -> str:
             Note:
             -  jika gambar produk selain produk kemasan, berikan satu kalimat: "Maaf, gambar bukan produk konsumsi kemasan."
             - Berikan analisis jelas dan padat sesuaikan dengan template.
-            - Gunakan paragraf panjang terstruktur untuk menjelaskan kesehatan komposisi produk (minimal 1000 token)
+            - Gunakan paragraf panjang terstruktur untuk menjelaskan kesehatan komposisi produk (minimal 800 token) tanpa 
+              menggunakan point formating.
             - Wajib ada referensi berformat jurnal ilmiah,tahun.Rentang tahun referensi 2023-2025.
 
             """
