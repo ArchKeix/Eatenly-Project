@@ -10,7 +10,7 @@ import os
 import base64
 import re
 import io
-
+import json
 
 # ----------------------------------------------------------------------- #
 
@@ -23,10 +23,10 @@ os.environ["GOOGLE_API_KEY"] = os.getenv("GEMINI_API_KEY")
 
 
 # Define Kompresi Image ke Base64
-def img_compress_b64(img_product: bytes) -> str:
+async def img_compress_b64(img_product: bytes) -> str:
 
     img = Image.open(io.BytesIO(img_product))
-    MaxSize = (1024, 1024)
+    MaxSize = (512, 512)
     img.thumbnail(MaxSize, Image.Resampling.LANCZOS)
     buffered = io.BytesIO()
     img.save(buffered, format=img.format)
@@ -37,17 +37,49 @@ def img_compress_b64(img_product: bytes) -> str:
     return img_b64
 
 
+def parse_to_json_structure(text: str) -> dict:
+    """
+    Parser Logik: Mengubah teks mentah dari AI menjadi Dictionary (JSON Object).
+    Fokus mengambil 3 poin: Nama, Halal, Rekomendasi.
+    """
+
+    # Default values (Placeholder jika AI gagal mendeteksi)
+    parsed_data = {
+        "product_name": "Tidak Teridentifikasi",
+        "halal_status": "Unknown",
+        "recommendation": "Netral",
+    }
+
+    # 1. Ambil Nama Produk
+    # Regex mencari teks setelah "Nama Produk :" sampai baris baru
+    match_prod = re.search(r"Nama Produk\s*:\s*(.*)", text, re.IGNORECASE)
+    if match_prod:
+        parsed_data["product_name"] = match_prod.group(1).strip()
+
+    # 2. Ambil Status Halal
+    match_halal = re.search(r"Status Halal\s*:\s*(.*)", text, re.IGNORECASE)
+    if match_halal:
+        parsed_data["halal_status"] = match_halal.group(1).strip()
+
+    # 3. Ambil Rekomendasi (Singkat)
+    match_rek = re.search(r"Rekomendasi\s*:\s*(.*)", text, re.IGNORECASE)
+    if match_rek:
+        parsed_data["recommendation"] = match_rek.group(1).strip()
+
+    return parsed_data
+
+
 # Define Fungsi AI Analyst
 async def AI_Analyst(img_product: bytes, personalize: str) -> str:
 
     # Compress & Convert image ke base64
-    img_b64 = img_compress_b64(img_product)
+    img_b64 = await img_compress_b64(img_product)
 
     # Inisialisasi model
     model = ChatGoogleGenerativeAI(
         model="gemini-2.5-flash-lite",
-        temperature=0.5,
-        max_output_tokens=5000,
+        temperature=0.6,
+        max_output_tokens=4500,
     )
 
     # Inisialisasi Task sistem & human message
@@ -63,33 +95,30 @@ async def AI_Analyst(img_product: bytes, personalize: str) -> str:
             4. List referensi 3 sumber jurnal ilmiah terbaru dari tahun 2023-2025 yang digunakan
                tanpa menyertakan penjelasannya dan format tanpa penomoran.
 
-            Template jawaban:
+            Template Teks:
             🍕 Produk : (jika ada merek, sebutkan nama mereknya. Jika tidak ada, buat dugaan berdasarkan visual kemasan)
             
-            😽 Rekomendasi konsumsi produk : (apakah direkomendasikan /tidak direkomendasikan untuk dikonsumsi)
+            😽 Rekomendasi konsumsi produk : (berikan respon direkomendasikan /tidak direkomendasikan )
             
-            🍽️ Status Halal: (berikan respon cukup produk ini halal/haram)
+            🍽️ Status Halal: (berikan respon halal/haram)
             
             👨‍🔬 Kandungan gizi/komposisi produk :
             (Dibawah sini berisi analisisnya berdasarkan dari komposisi produk yang terlihat pada gambar kemasan.) 
             
             💪 Kesehatan komposisi produk : 
-            (Berikan analisis terkait semua komposisi produk yang terkait dengan resiko jangka pendek dan panjang
-            terhadap kondisi tubuh sesuai dengan {personalize} user dan Kehalalan produk berdasarkan 
+            (Berikan analisis terkait sesuai dengan {personalize} user dan Kehalalan produk berdasarkan 
             komposisi yang ada pada kemasan produk dan sertakan jika ada kandungan yang meragukan)
 
             📚 Referensi : 
-            1. (judul jurnal ilmiah 1 beserta tahun)
-            2. (judul jurnal ilmiah 2 beserta tahun)
-            3. (judul jurnal ilmiah 3 beserta tahun)
- 
-            Note:
-            - Jika gambar produk tidak jelas, berikan satu kalimat: "Maaf, gambar kurang jelas untuk dianalisa."
-              Sedangkan jika gambar produk selain produk kemasan, berikan satu kalimat: "Maaf, gambar bukan produk konsumsi kemasan."
-            - Selalu buat analisa panjang, rinci, dan tidak boleh singkat.
-            - Hindari penulisan poin-poin, gunakan paragraf panjang terstruktur hanya pada template
-              kesehatan komposisi produk.
+            1.) 
+            2.) 
+            3.) 
 
+            Note:
+            -  jika gambar produk selain produk kemasan, berikan satu kalimat: "Maaf, gambar bukan produk konsumsi kemasan."
+            - Berikan analisis jelas dan padat sesuaikan dengan template.
+            - Gunakan paragraf panjang terstruktur untuk menjelaskan kesehatan komposisi produk (minimal 1000 token)
+            - Wajib ada referensi berformat jurnal ilmiah,tahun.Rentang tahun referensi 2023-2025.
 
             """
             )
@@ -106,18 +135,12 @@ async def AI_Analyst(img_product: bytes, personalize: str) -> str:
     ]
 
     try:
+        # === Bersihkan jawaban dari model === #
         response = model.invoke(messages)
-
         response = re.sub(r"(\*\*|__)", "", response.content)
-
-        # Normalisasi spasi
-        response = re.sub(r"[ \t]+", " ", response)
-
-        # Rapikan line break
-        response = re.sub(r"\n{2,}", "\n\n", response)
-
-        return {"status": "success", "analysis": response}
+        result_json = parse_to_json_structure(response)
+        return {"status": "success", "analysis": response, "response_json": result_json}
 
     except Exception as e:
         response = f"Maaf, terjadi kesalahan {e}."
-        return {"status": "error", "analysis": response}
+        return {"status": "error", "analysis": response, "response_json": None}

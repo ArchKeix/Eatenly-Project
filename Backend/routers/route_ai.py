@@ -3,7 +3,7 @@ from db_conf import users_collect
 from services.service_ai import AI_Analyst
 import jwt
 import os
-
+from fastapi.responses import StreamingResponse
 
 router_ai = APIRouter(prefix="/ai", tags=["ai"])
 
@@ -30,9 +30,6 @@ async def set_ai(
         # Ambil preferensi user
         user = await users_collect.find_one({"id_user": id_user})
 
-        # Img byte dari UploadFile
-        img_product = await img_product.read()
-
         # Buat personalisasi
         pref = user.get("preferensi")
         riwayat = user.get("riwayat_penyakit")
@@ -41,10 +38,15 @@ async def set_ai(
         1. Preferensi user: {pref}
         2. Riwayat penyakit user: {riwayat}
         """
+
+        # Img byte dari UploadFile
+        img_product = await img_product.read()
+
         answer = await AI_Analyst(img_product, personalize)
 
     return {
         "status": answer["status"],
         "analysis": answer["analysis"],
+        # "response_json": answer["response_json"],
         "id_user": id_user,
     }
