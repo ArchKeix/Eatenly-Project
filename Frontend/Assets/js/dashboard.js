@@ -3,6 +3,25 @@
 // =======================================================
 document.addEventListener('DOMContentLoaded', () => {
     
+    // --- INISIALISASI SWIPER JS ---
+    var swiper = new Swiper(".myHistorySwiper", {
+        slidesPerView: 2,       // Tampilkan 2 kolom
+
+        slidesPerGroup: 2,
+        
+        grid: {
+            rows: 2,            // Tampilkan 2 baris
+            fill: 'row',        // Urutan item: Kiri->Kanan, baru ke Bawah
+        },
+        spaceBetween: 10,       // Jarak antar kartu (gap)
+        pagination: {
+            el: ".swiper-pagination",
+            clickable: true,    // Titik bisa diklik
+        },
+        // Agar tidak bisa di-geser kalau itemnya dikit (Opsional)
+        watchOverflow: true, 
+    });
+    
     // A. CEK TOKEN / ID_USER (Security Check)
     const token = localStorage.getItem('token');
     const idUser = localStorage.getItem('id_user');

@@ -4,15 +4,20 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Dashboard - Eatenly</title>
-    <link rel="stylesheet" href="..//css/style.css">
+    
+    <link rel="stylesheet" href="../css/style.css">
+    
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.css"/>
 </head>
+
 <body>
 
     <section class="dashboard-header">
         <div class="top-bar">
             <h3>EATENLY</h3>
-            <a href="/Frontend/index.html" class="logout-link">Keluar</a>
+            <a href="../../index.html" class="logout-link">Keluar</a>
         </div>
         
         <div class="welcome-text">
@@ -75,19 +80,38 @@
 
         <div class="history-section">
             <h3>Riwayat scan</h3>
+            
             <div class="history-container">
-                <div class="history-grid">
-                    <div class="history-card">
-                        <h4>Bengbeng</h4>
-                        <p>Makanan ini baik karena rasanya manis...</p>
+                <div class="swiper myHistorySwiper">
+                    <div class="swiper-wrapper">
+                        <div class="swiper-slide history-card">
+                            <h4>Bengbeng 1</h4>
+                            <p>Makanan ini baik karena rasanya manis...</p>
+                        </div>
+                        <div class="swiper-slide history-card">
+                            <h4>Chitato 2</h4>
+                            <p>Kurangi konsumsi karena mengandung MSG...</p>
+                        </div>
+                        <div class="swiper-slide history-card">
+                            <h4>Oreo 3</h4>
+                            <p>Kandungan gula cukup tinggi...</p>
+                        </div>
+                        <div class="swiper-slide history-card">
+                            <h4>Pocky 4</h4>
+                            <p>Cukup aman untuk camilan ringan...</p>
+                        </div>
+                        <div class="swiper-slide history-card">
+                            <h4>Taro 5</h4>
+                            <p>Mengandung banyak natrium...</p>
+                        </div>
+                        <div class="swiper-slide history-card">
+                            <h4>Silverqueen 6</h4>
+                            <p>Coklat mengandung kalori tinggi...</p>
+                        </div>
+                        
                     </div>
-                    <div class="history-card">
-                        <h4>Chitato</h4>
-                        <p>Kurangi konsumsi karena mengandung MSG...</p>
-                    </div>
-                </div>
-                <div class="pagination-dots">
-                    <span class="dot active"></span><span class="dot"></span><span class="dot"></span>
+                    
+                    <div class="swiper-pagination"></div>
                 </div>
             </div>
         </div>
@@ -105,19 +129,15 @@
     <div class="scan-modal-overlay" id="scanModal">
         <div class="scan-modal-content">
             <h3 class="modal-title">Pilihan scan</h3>
-            
             <div class="scan-options-container">
                 <button class="scan-option-btn top-option" onclick="triggerCamera()">
                     <i class="fas fa-camera"></i> <span>Scan dengan kamera</span>
                 </button>
-                
                 <div class="separator-line"></div>
-
                 <button class="scan-option-btn bottom-option" onclick="triggerGallery()">
                     <i class="fas fa-paperclip"></i> <span>Pilih dari file</span>
                 </button>
             </div>
-            
             <button class="close-modal-text" onclick="closeScanModal()">Batal</button>
         </div>
     </div>
@@ -125,6 +145,8 @@
     <input type="file" id="cameraInput" accept="image/*" capture="environment" style="display: none;" onchange="handleFileSelect(this)">
     <input type="file" id="galleryInput" accept="image/*" style="display: none;" onchange="handleFileSelect(this)">
 
+    <script src="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.js"></script>
     <script src="../js/dashboard.js"></script>
+
 </body>
 </html>
