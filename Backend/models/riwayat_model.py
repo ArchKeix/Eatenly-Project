@@ -5,7 +5,7 @@ class riwayat_analisis(BaseModel):  # -> Model Riwayat Analisis di Database
     id_riwayat: int
     id_user: str
     nama_produk: str
-    preferensi: str
+    status_halal: str
     rekomendasi_produk: str
-    hasil_analisis: str
+    preferensi: str
     tanggal_analisis: str

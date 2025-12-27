@@ -74,7 +74,8 @@ document.getElementById('registerForm').addEventListener('submit', async (e) => 
       // redirect ke personalisasi
       window.location.href = 'personalisasi.html';
     } else {
-      alert('Error: ' + (data.detail || JSON.stringify(data)));
+      // alert('Error: ' + (data.detail || JSON.stringify(data)));
+      alert('ERROR: Kata Sandi Minimal 8 Karakter');
     }
   } catch (error) {
     console.error(error);

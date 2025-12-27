@@ -10,6 +10,7 @@ router_personalize = APIRouter(prefix="/personalize", tags=["personalize"])
 async def set_personalize(id_user: str, payload: UserPersonalize):
     return await save_personalize(id_user, payload)
 
+
 # --- ENDPOINT 2: UNTUK MENGAMBIL DATA (GET) ---
 @router_personalize.get("/{id_user}")
 async def get_personalize(id_user: str):
@@ -26,5 +27,5 @@ async def get_personalize(id_user: str):
         "umur": user_data.get("umur", "-"),
         "jenis_kelamin": user_data.get("jenis_kelamin", "-"),
         "riwayat_penyakit": user_data.get("riwayat_penyakit", "-"),
-        "preferensi": user_data.get("preferensi", "-")
+        "preferensi": user_data.get("preferensi", "-"),
     }

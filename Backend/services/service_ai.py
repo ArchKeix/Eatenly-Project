@@ -10,7 +10,7 @@ import os
 import base64
 import re
 import io
-
+import json
 
 # ----------------------------------------------------------------------- #
 
@@ -23,10 +23,10 @@ os.environ["GOOGLE_API_KEY"] = os.getenv("GEMINI_API_KEY")
 
 
 # Define Kompresi Image ke Base64
-def img_compress_b64(img_product: bytes) -> str:
+async def img_compress_b64(img_product: bytes) -> str:
 
     img = Image.open(io.BytesIO(img_product))
-    MaxSize = (1024, 1024)
+    MaxSize = (512, 512)
     img.thumbnail(MaxSize, Image.Resampling.LANCZOS)
     buffered = io.BytesIO()
     img.save(buffered, format=img.format)
@@ -37,17 +37,55 @@ def img_compress_b64(img_product: bytes) -> str:
     return img_b64
 
 
+def parse_to_json_structure(text: str) -> dict:
+    """
+    Parser Logik: Mengubah teks mentah dari AI menjadi Dictionary (JSON Object).
+    Regex diperbarui untuk menangkap format dengan EMOJI atau TANPA EMOJI.
+    """
+
+    # Default values
+    parsed_data = {
+        "product_name": "Tidak Teridentifikasi",
+        "halal_status": "Unknown",
+        "recommendation": "Netral",
+    }
+
+    # 1. Ambil Nama Produk
+    # Regex: Mencari '🍕 Produk :' ATAU 'Nama Produk :' ATAU 'Produk :'
+    # (?: ... ) adalah non-capturing group untuk alternatif pilihan
+    match_prod = re.search(r"(?:🍕|Nama)?\s*Produk\s*:\s*(.*)", text, re.IGNORECASE)
+    if match_prod:
+        parsed_data["product_name"] = match_prod.group(1).strip()
+
+    # 2. Ambil Status Halal
+    # Regex: Mencari '🍽️ Status Halal:' ATAU 'Status Halal:'
+    match_halal = re.search(r"(?:🍽️|🍽)?\s*Status Halal\s*:\s*(.*)", text, re.IGNORECASE)
+    if match_halal:
+        parsed_data["halal_status"] = match_halal.group(1).strip()
+
+    # 3. Ambil Rekomendasi
+    # Regex: Mencari '😽 Rekomendasi konsumsi produk :' ATAU 'Rekomendasi :'
+    # Bagian '(?:konsumsi produk)?' membuatnya opsional
+    match_rek = re.search(
+        r"(?:😽)?\s*Rekomendasi\s*(?:konsumsi produk)?\s*:\s*(.*)", text, re.IGNORECASE
+    )
+    if match_rek:
+        parsed_data["recommendation"] = match_rek.group(1).strip()
+
+    return parsed_data
+
+
 # Define Fungsi AI Analyst
 async def AI_Analyst(img_product: bytes, personalize: str) -> str:
 
     # Compress & Convert image ke base64
-    img_b64 = img_compress_b64(img_product)
+    img_b64 = await img_compress_b64(img_product)
 
     # Inisialisasi model
     model = ChatGoogleGenerativeAI(
         model="gemini-2.5-flash-lite",
-        temperature=0.5,
-        max_output_tokens=5000,
+        temperature=0.6,
+        max_output_tokens=4500,
     )
 
     # Inisialisasi Task sistem & human message
@@ -63,29 +101,32 @@ async def AI_Analyst(img_product: bytes, personalize: str) -> str:
             4. List referensi 3 sumber jurnal ilmiah terbaru dari tahun 2023-2025 yang digunakan
                tanpa menyertakan penjelasannya dan format tanpa penomoran.
 
-            Template jawaban:
+            Template Teks:
             🍕 Produk : (jika ada merek, sebutkan nama mereknya. Jika tidak ada, buat dugaan berdasarkan visual kemasan)
-            
-            😽 Rekomendasi konsumsi produk : (apakah direkomendasikan /tidak direkomendasikan untuk dikonsumsi)
-            
-            🍽️ Status Halal: (berikan respon cukup produk ini halal/haram)
-            
+
+            😽 Rekomendasi konsumsi produk : (berikan respon hanya direkomendasikan /tidak direkomendasikan )
+
+            🍽️ Status Halal: (berikan respon hanya halal/haram)
+
             👨‍🔬 Kandungan gizi/komposisi produk :
             (Dibawah sini berisi analisisnya berdasarkan dari komposisi produk yang terlihat pada gambar kemasan.) 
             
             💪 Kesehatan komposisi produk : 
-            (Dibawah sini berisi analisisnya sesuai {personalize} user)
+            (Berikan analisis terkait sesuai dengan {personalize} user dan Kehalalan produk berdasarkan 
+            komposisi yang ada pada kemasan produk dan sertakan jika ada kandungan yang meragukan)
 
             📚 Referensi : 
-            1. (judul jurnal ilmiah 1 beserta tahun)
-            2. (judul jurnal ilmiah 2 beserta tahun)
-            3. (judul jurnal ilmiah 3 beserta tahun)
- 
+            1.) 
+            2.) 
+            3.) 
+
             Note:
-            - Berikan hasil analisa ringkas tapi lengkap, detail, dan valid.
-            - Fokus menjawab berdasarkan gambar kemasan produk yang diberikan dan berikan respon "Hanya dapat menganalisa dari gambar kemasan produk"dan jangan lanjutkan analisa
-            - Pada template rekomendasi dan stasus halal/haram, berikan jawaban tegas singkat dan hanya satu kata ("direkomendasikan"/"tidak direkomendasikan" dan "halal"/"haram").
-            - Setiap point pada template jawaban harus terisi dan semuanya sesuaikan dengan template baik itu cara jawab, spasi,dan penulisan
+            -  jika gambar produk selain produk kemasan, berikan satu kalimat: "Maaf, gambar bukan produk konsumsi kemasan."
+            - Berikan analisis jelas dan padat sesuaikan dengan template.
+            - Gunakan paragraf panjang terstruktur untuk menjelaskan kesehatan komposisi produk (minimal 800 token) tanpa 
+              menggunakan point formating.
+            - Wajib ada referensi berformat jurnal ilmiah,tahun.Rentang tahun referensi 2023-2025.
+
             """
             )
         ),
@@ -101,18 +142,12 @@ async def AI_Analyst(img_product: bytes, personalize: str) -> str:
     ]
 
     try:
+        # === Bersihkan jawaban dari model === #
         response = model.invoke(messages)
-
         response = re.sub(r"(\*\*|__)", "", response.content)
-
-        # Normalisasi spasi
-        response = re.sub(r"[ \t]+", " ", response)
-
-        # Rapikan line break
-        response = re.sub(r"\n{2,}", "\n\n", response)
-
-        return {"status": "success", "analysis": response}
+        result_json = parse_to_json_structure(response)
+        return {"status": "success", "analysis": response, "response_json": result_json}
 
     except Exception as e:
         response = f"Maaf, terjadi kesalahan {e}."
-        return {"status": "error", "analysis": response}
+        return {"status": "error", "analysis": response, "response_json": None}
