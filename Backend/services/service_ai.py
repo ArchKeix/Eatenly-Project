@@ -83,7 +83,7 @@ async def AI_Analyst(img_product: bytes, personalize: str) -> str:
 
     # Inisialisasi model
     model = ChatGoogleGenerativeAI(
-        model="gemini-2.5-flash-lite",
+        model="gemini-2.5-flash",
         temperature=0.6,
         max_output_tokens=4500,
     )
@@ -104,7 +104,7 @@ async def AI_Analyst(img_product: bytes, personalize: str) -> str:
             Template Teks:
             🍕 Produk : (jika ada merek, sebutkan nama mereknya. Jika tidak ada, buat dugaan berdasarkan visual kemasan)
 
-            😽 Rekomendasi konsumsi produk : (berikan respon hanya direkomendasikan /tidak direkomendasikan )
+            😽 Rekomendasi konsumsi produk : (berikan respon hanya direkomendasikan /tidak disarankan )
 
             🍽️ Status Halal: (berikan respon hanya halal/haram)
 
@@ -121,9 +121,9 @@ async def AI_Analyst(img_product: bytes, personalize: str) -> str:
             3.) 
 
             Note:
-            -  jika gambar produk selain produk kemasan, berikan satu kalimat: "Maaf, gambar bukan produk konsumsi kemasan."
+            - Jika gambar produk selain produk konsumsi kemasan, berikan satu kalimat: "Maaf, gambar bukan produk konsumsi kemasan."
             - Berikan analisis jelas dan padat sesuaikan dengan template.
-            - Gunakan paragraf panjang terstruktur untuk menjelaskan kesehatan komposisi produk (minimal 800 token) tanpa 
+            - Gunakan paragraf panjang terstruktur untuk menjelaskan kesehatan komposisi produk (minimal 500 token) tanpa 
               menggunakan point formating.
             - Wajib ada referensi berformat jurnal ilmiah,tahun.Rentang tahun referensi 2023-2025.
 

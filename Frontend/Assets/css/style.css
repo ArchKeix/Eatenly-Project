@@ -14,14 +14,28 @@ body {
   margin: 0;
   width: 100%;
   box-sizing: border-box;
-  background-image: linear-gradient(rgba(20, 23, 63), rgba(31, 97, 183, 0.5)), url('../img/Snack.png');
-  background-position: start;
+  background-image: linear-gradient(rgba(20, 23, 63), rgba(31, 97, 183, 0.6)), url('../img/Snack.png');
+  background-position: center;
   background-size: cover;
-  border-radius: 0px 0px 10px 10px;
+  border-radius: 0px 0px 30px 30px;
   text-align: start;
-  padding: 20px 30px;
+  padding: 30px;
   color: #fff;
 }
+
+.header-content h1 {
+  margin-bottom: 15px;
+}
+
+.header-content h3 {
+  margin-bottom: 15px;
+}
+
+.header-content p {
+  margin-bottom: 10px;
+  font-size: 12px;
+}
+
 
 nav {
   display: flex;
@@ -455,10 +469,9 @@ body {
   /* Lengkungan di box */
   border-radius: 0 0 40px 40px;
 
-  padding: 30px;
+  padding: 20px;
   box-sizing: border-box;
   color: white;
-  padding-bottom: 60px; /* Memberi ruang di bawah teks */
 }
 
 .top-bar {
@@ -608,7 +621,7 @@ body {
 .history-container {
   background-color: #aebbf5;
   padding: 20px;
-  /* kurangi padding container karena ruang bawah sudah diurus .myHistorySwiper */
+  
   padding-bottom: 20px;
   border-radius: 20px;
   border: 1px solid #6482ad;
@@ -618,44 +631,25 @@ body {
 /* 2. Konfigurasi Area Slider (Swiper) */
 .myHistorySwiper {
   width: 100%;
-  height: 320px; /* Tinggi total agar muat 2 baris */
+  height: 280px; /* Tinggi total agar muat 2 baris */
   padding-bottom: 40px !important; /* Memberi ruang kosong di bawah khusus titik-titik */
 }
 
-/* 3. Rumus Tinggi Slide (Agar jadi Grid 2 Baris) */
 .swiper-slide {
-  /* (100% tinggi area - gap) dibagi 2 */
-  height: calc((100% - 50px) / 2) !important;
-}
+  height: 100% !important;
+  background: transparent; /* Agar background slide transparan */
 
-/* COBA SWIPER-SLIDE */
-/* .swiper-slide {
   display: grid;
-  grid-template-columns: 1fr 1fr;
-  grid-template-rows: auto auto;
-  gap: 20px;
-  padding: 10px;
-  height: auto !important;
-} */
-
-/* 4. Tampilan Kartu (Visual)  (INI YANG DIPAKE)*/
-/* .history-card {
-  background-color: #383854;
-  color: white;
-  padding: 15px;
-  border-radius: 15px;
-  box-sizing: border-box; */
-
-/* Agar teks rapi di tengah vertikal */
-/* display: flex;
-  flex-direction: column;
-  justify-content: center;
-} */
+  grid-template-columns: 1fr;      /* Cuma 1 Kolom (Full Lebar) */
+  grid-template-rows: 1fr 1fr;     /* 2 Baris Presisi */
+  gap: 15px;                       /* Jarak antar kartu */
+  align-content: start;
+}
 
 .history-card {
   background-color: #383854;
   color: white;
-  padding: 40px; /* lebih kecil dari sebelumnya */
+  padding: 20px; /* lebih kecil dari sebelumnya */
   margin-bottom: 20px; /* COBA */
   border-radius: 20px;
   box-sizing: border-box;
@@ -705,8 +699,9 @@ body {
   position: fixed;
   bottom: 30px;
   right: 30px;
-  width: 70px;
-  background-color: #6482ad;
+  width: 64px;
+  height: 64px;
+  background-color: #5D75F0;
   border-radius: 50%;
   border: none;
   box-shadow: 0 4px 15px rgba(100, 130, 173, 0.5);
@@ -716,6 +711,23 @@ body {
   cursor: pointer;
   z-index: 1000; /* Agar selalu di atas elemen lain */
   transition: transform 0.2s;
+
+  /* Efek bayangan agar terlihat 'mengambang' */
+    box-shadow: 0 4px 12px rgba(93, 117, 240, 0.4);
+    cursor: pointer;
+    transition: transform 0.2s; /* Efek animasi saat ditekan */
+}
+
+/* Efek saat tombol ditekan */
+.fab-camera:active {
+    transform: scale(0.95);
+}
+
+/* Pastikan warna ikon putih */
+.fab-camera svg {
+    width: 32px;  /* Ukuran ikon */
+    height: 32px;
+    fill: white;  /* Warna ikon putih */
 }
 
 .fab-camera:hover {
@@ -995,7 +1007,7 @@ option.btn {
 
 /* Warna Merah (Untuk Haram / Tidak Direkomendasikan) */
 .status-red {
-  color: #dc3545; /* Merah terang standar UI */
+  color: #dc3545; 
   font-weight: 800; /* Sangat tebal */
   background-color: #ffe6e6; /* Latar merah muda tipis biar jelas */
   padding: 2px 6px; /* Sedikit jarak biar rapi */
@@ -1004,7 +1016,7 @@ option.btn {
 
 /* Warna Hijau (Untuk Halal / Direkomendasikan) */
 .status-green {
-  color: #198754; /* Hijau segar */
+  color: #198754;
   font-weight: 800;
   background-color: #e6ffed; /* Latar hijau muda tipis */
   padding: 2px 6px;

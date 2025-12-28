@@ -1,626 +1,301 @@
 // =======================================================
-// 1. LOGIKA USER DATA (PERSONALISASI) & AUTH
+// 1. LOGIKA UTAMA (LOAD SAAT DOM SIAP)
 // =======================================================
 document.addEventListener('DOMContentLoaded', () => {
-  // --- INISIALISASI SWIPER JS ---
-  var swiper = new Swiper('.myHistorySwiper', {
-    slidesPerView: 2, // Tampilkan 2 kolom
+    
+    // A. CEK AUTH (Jaga Pintu)
+    const token = localStorage.getItem('token');
+    const idUser = localStorage.getItem('id_user');
 
-    slidesPerGroup: 2,
+    if (!token || !idUser) {
+        alert("Sesi habis. Silakan login kembali.");
+        window.location.href = '../pages/login.html';
+        return;
+    }
 
-    grid: {
-      rows: 2, // Tampilkan 2 baris
-      fill: 'row', // Urutan item: Kiri->Kanan, baru ke Bawah
-    },
-    spaceBetween: 10, // Jarak antar kartu (gap)
-    pagination: {
-      el: '.swiper-pagination',
-      clickable: true, // Titik bisa diklik
-    },
-    // Agar tidak bisa di-geser kalau itemnya dikit (Opsional)
-    watchOverflow: true,
-  });
+    // B. LOAD DATA PROFIL (Nama, Umur, Penyakit)
+    // Fungsi ini akan mengisi data dari LocalStorage dulu, lalu update dari Backend
+    loadUserData(idUser);
 
-  // A. CEK TOKEN / ID_USER (Security Check)
-  const token = localStorage.getItem('token');
-  const idUser = localStorage.getItem('id_user');
+    // C. LOAD RIWAYAT SCAN (DARI DATABASE) 🔥
+    loadRiwayatFromBackend();
 
-  if (!token || !idUser) {
-    alert('Sesi habis atau belum login. Silakan login kembali.');
-    window.location.href = '../pages/login.html';
-    return;
-  }
-
-  // B. AMBIL DATA DARI LOCALSTORAGE
-  const nama = localStorage.getItem('nama_panggilan');
-  const umur = localStorage.getItem('umur');
-  const gender = localStorage.getItem('jenis_kelamin');
-  const penyakit = localStorage.getItem('riwayat_penyakit');
-  const preferensi = localStorage.getItem('preferensi');
-
-  // C. TEMPEL DATA KE HTML
-
-  // 1. Header Sapaan
-  const headerNama = document.getElementById('displayNamaHeader');
-  if (headerNama) {
-    headerNama.innerText = nama && nama !== 'undefined' && nama !== 'null' ? nama : 'User';
-  }
-
-  // 2. Kartu Umur
-  const displayUmur = document.getElementById('displayUmur');
-  if (displayUmur) {
-    displayUmur.innerText = umur && umur !== 'null' ? umur + ' TAHUN' : '-';
-  }
-
-  // 3. Kartu Gender
-  const displayGender = document.getElementById('displayGender');
-  if (displayGender) {
-    displayGender.innerText = gender && gender !== 'null' ? gender.toUpperCase() : '-';
-  }
-
-  // 4. Kartu Penyakit & Preferensi (PAKAI FUNGSI BARU 'renderListLimit')
-  renderListLimit('displayPenyakitContainer', 'btnShowPenyakit', penyakit);
-  renderListLimit('displayPreferensiContainer', 'btnShowPreferensi', preferensi);
-
-  // D. BACKGROUND UPDATE
-  updateDataBackground(idUser);
-
-  // E. FITUR LOGOUT
-  const logoutBtn = document.querySelector('.logout-link');
-  if (logoutBtn) {
-    logoutBtn.addEventListener('click', (e) => {
-      e.preventDefault();
-      localStorage.clear();
-      window.location.href = '../../index.html';
-    });
-  }
+    // D. LOGOUT LISTENER
+    const logoutBtn = document.querySelector('.logout-link');
+    if (logoutBtn) {
+        logoutBtn.addEventListener('click', (e) => {
+            e.preventDefault(); 
+            localStorage.clear(); 
+            window.location.href = '../../index.html'; 
+        });
+    }
 });
 
-// --- FUNGSI UPDATE DATA BACKGROUND ---
-async function updateDataBackground(idUser) {
-  try {
-    const response = await fetch(`http://localhost:8000/personalize/${idUser}`);
-    if (response.ok) {
-      const data = await response.json();
-
-      // Update Tampilan Biasa
-      if (data.nama_panggilan) document.getElementById('displayNamaHeader').innerText = data.nama_panggilan;
-      if (data.umur) document.getElementById('displayUmur').innerText = data.umur + ' TAHUN';
-      if (data.jenis_kelamin) document.getElementById('displayGender').innerText = data.jenis_kelamin.toUpperCase();
-
-      // Update Tampilan List (Penyakit & Preferensi)
-      renderListLimit('displayPenyakitContainer', 'btnShowPenyakit', data.riwayat_penyakit);
-      renderListLimit('displayPreferensiContainer', 'btnShowPreferensi', data.preferensi);
-
-      // Update LocalStorage
-      localStorage.setItem('nama_panggilan', data.nama_panggilan || '');
-      localStorage.setItem('umur', data.umur || '');
-      localStorage.setItem('jenis_kelamin', data.jenis_kelamin || '');
-      localStorage.setItem('riwayat_penyakit', data.riwayat_penyakit || '');
-      localStorage.setItem('preferensi', data.preferensi || '');
-    }
-  } catch (err) {
-    console.log('Mode Offline: Menggunakan data dari cache lokal.');
-  }
-}
-
 // =======================================================
-// 🔥 FUNGSI BARU: RENDER LIST DENGAN LIMIT & SHOW ALL
+// 2. FUNGSI LOAD DATA PROFIL (GET /personalize)
 // =======================================================
-function renderListLimit(containerId, buttonId, dataString) {
-  const container = document.getElementById(containerId);
-  const button = document.getElementById(buttonId);
-
-  if (!container || !button) return;
-
-  // Reset isi container
-  container.innerHTML = '';
-
-  // Cek jika data kosong
-  if (!dataString || dataString === 'null' || dataString === '-' || dataString.trim() === '') {
-    container.innerHTML = '<span class="value-large">-</span>';
-    button.style.display = 'none';
-    return;
-  }
-
-  // 1. Pecah String jadi Array (Pemisah koma)
-  // Contoh: "Diabetes, Asma, Jantung, Ginjal" -> ["Diabetes", "Asma", "Jantung", "Ginjal"]
-  const items = dataString
-    .split(',')
-    .map((item) => item.trim())
-    .filter((item) => item !== '');
-
-  // 2. Loop dan buat elemen HTML
-  items.forEach((itemText, index) => {
-    const div = document.createElement('div');
-    div.className = 'list-item';
-    div.innerText = itemText;
-
-    // Jika urutan ke-4 dst (index > 2), sembunyikan
-    if (index >= 3) {
-      div.classList.add('hidden-item');
-    }
-
-    container.appendChild(div);
-  });
-
-  // 3. Logika Tombol Show All
-  if (items.length > 3) {
-    button.style.display = 'inline'; // Munculkan tombol
-    button.innerText = 'Show all';
-
-    // Clone button untuk reset event listener (agar tidak numpuk event klik)
-    const newBtn = button.cloneNode(true);
-    button.parentNode.replaceChild(newBtn, button);
-
-    newBtn.addEventListener('click', (e) => {
-      e.preventDefault();
-      const hiddenItems = container.querySelectorAll('.hidden-item, .revealed-item');
-
-      // Cek status saat ini (Apakah sedang Show All atau Show Less?)
-      const isExpanding = newBtn.innerText === 'Show all';
-
-      hiddenItems.forEach((item) => {
-        if (isExpanding) {
-          // Tampilkan item
-          item.classList.remove('hidden-item');
-          item.classList.add('revealed-item');
-        } else {
-          // Sembunyikan item lagi
-          item.classList.add('hidden-item');
-          item.classList.remove('revealed-item');
-        }
-      });
-
-      // Ubah teks tombol
-      newBtn.innerText = isExpanding ? 'Show less' : 'Show all';
+async function loadUserData(idUser) {
+    // 1. Tampilkan dulu data dari LocalStorage (biar cepat)
+    renderUserProfile({
+        nama_panggilan: localStorage.getItem('nama_panggilan'),
+        umur: localStorage.getItem('umur'),
+        jenis_kelamin: localStorage.getItem('jenis_kelamin'),
+        riwayat_penyakit: localStorage.getItem('riwayat_penyakit'),
+        preferensi: localStorage.getItem('preferensi')
     });
-  } else {
-    // Kalau item cuma 3 atau kurang, sembunyikan tombol
-    button.style.display = 'none';
-  }
+
+    // 2. Fetch data terbaru dari Backend (Background Update)
+    try {
+        const response = await fetch(`http://localhost:8000/personalize/${idUser}`);
+        if (response.ok) {
+            const data = await response.json();
+            
+            // Update Tampilan dengan data baru
+            renderUserProfile(data);
+
+            // Update LocalStorage agar sinkron
+            if(data.nama_panggilan) localStorage.setItem('nama_panggilan', data.nama_panggilan);
+            if(data.umur) localStorage.setItem('umur', data.umur);
+            if(data.jenis_kelamin) localStorage.setItem('jenis_kelamin', data.jenis_kelamin);
+            if(data.riwayat_penyakit) localStorage.setItem('riwayat_penyakit', data.riwayat_penyakit);
+            if(data.preferensi) localStorage.setItem('preferensi', data.preferensi);
+        }
+    } catch (err) {
+        console.log("Mode Offline atau Gagal Fetch Profil: Menggunakan data cache lokal.");
+    }
+}
+
+function renderUserProfile(data) {
+    // Helper untuk menampilkan data ke elemen HTML
+    if(document.getElementById('displayNamaHeader')) {
+        document.getElementById('displayNamaHeader').innerText = (data.nama_panggilan && data.nama_panggilan !== 'undefined') ? data.nama_panggilan : "User";
+    }
+    if(document.getElementById('displayUmur')) {
+        document.getElementById('displayUmur').innerText = (data.umur && data.umur !== 'null') ? data.umur + " TAHUN" : "-";
+    }
+    if(document.getElementById('displayGender')) {
+        document.getElementById('displayGender').innerText = (data.jenis_kelamin && data.jenis_kelamin !== 'null') ? data.jenis_kelamin.toUpperCase() : "-";
+    }
+    
+    // Render List Penyakit & Preferensi
+    renderListLimit('displayPenyakitContainer', 'btnShowPenyakit', data.riwayat_penyakit);
+    renderListLimit('displayPreferensiContainer', 'btnShowPreferensi', data.preferensi);
 }
 
 // =======================================================
-// 2. LOGIKA MODAL SCAN & KAMERA (TETAP SAMA)
+// 3. FUNGSI LOAD RIWAYAT (GET /ai/history)
 // =======================================================
+async function loadRiwayatFromBackend() {
+    const token = localStorage.getItem('token');
+    const wrapper = document.querySelector('.swiper-wrapper');
+    if (!wrapper) return;
 
+    wrapper.innerHTML = ''; // Bersihkan container sebelum diisi
+
+    try {
+        const response = await fetch('http://localhost:8000/ai/history', {
+            method: 'GET',
+            headers: {
+                'Authorization': `Bearer ${token}`,
+                'Content-Type': 'application/json'
+            }
+        });
+
+        const result = await response.json();
+
+        // Cek apakah ada datanya (result.data)
+        if (response.ok && result.data && result.data.length > 0) {
+            renderSwiperSlides(result.data);
+        } else {
+            // Tampilan jika riwayat kosong
+            wrapper.innerHTML = `
+                <div class="swiper-slide" style="display:flex; justify-content:center; align-items:center; height:100%;">
+                    <p style="text-align:center; color:#fff; font-size:12px; opacity:0.8;">Belum ada riwayat scan.</p>
+                </div>`;
+        }
+    } catch (error) {
+        console.error("Gagal mengambil riwayat:", error);
+        wrapper.innerHTML = `<p style="color:white; text-align:center; font-size:12px; padding:20px;">Gagal memuat data riwayat.</p>`;
+    }
+}
+
+function renderSwiperSlides(dataList) {
+    const wrapper = document.querySelector('.swiper-wrapper');
+    
+    // LOGIKA CHUNKING: Bagi data jadi halaman-halaman (1 halaman isi 2 kartu)
+    for (let i = 0; i < dataList.length; i += 2) {
+        
+        // 1. Buat Container Slide (Halaman)
+        const slide = document.createElement('div');
+        slide.className = 'swiper-slide';
+
+        // 2. Ambil potongan 2 data
+        const chunk = dataList.slice(i, i + 2);
+
+        // 3. Masukkan kartu-kartu ke dalam Slide
+        chunk.forEach(item => {
+            // Mapping key sesuai database python (route_ai.py)
+            const title = item.nama_produk || 'Produk';
+            const rekomen = item.rekomendasi_produk || '-';
+            const halal = item.status_halal || '-';
+
+            const card = document.createElement('div');
+            card.className = 'history-card';
+            card.innerHTML = `
+                <h4>${title}</h4>
+                <p>Rekomen: ${rekomen}</p>
+                <p>Status: ${halal}</p>
+            `;
+            slide.appendChild(card);
+        });
+
+        wrapper.appendChild(slide);
+    }
+
+    // 4. INISIALISASI ULANG SWIPER
+    // Kita destroy dulu yang lama biar ga error/double
+    if (window.myHistorySwiper instanceof Swiper) {
+        window.myHistorySwiper.destroy(true, true);
+    }
+
+    window.myHistorySwiper = new Swiper(".myHistorySwiper", {
+        slidesPerView: 1,       // 1 Halaman penuh
+        spaceBetween: 20,       // Jarak antar halaman
+        pagination: {
+            el: ".swiper-pagination",
+            clickable: true,
+        },
+        watchOverflow: true, 
+    });
+}
+
+// =======================================================
+// 4. FUNGSI UPLOAD & SCAN (POST /ai/)
+// =======================================================
 const scanModal = document.getElementById('scanModal');
+function openScanModal() { if(scanModal) scanModal.style.display = 'flex'; }
+function closeScanModal() { if(scanModal) scanModal.style.display = 'none'; }
+window.onclick = function(event) { if (event.target == scanModal) closeScanModal(); };
 
-function openScanModal() {
-  if (scanModal) scanModal.style.display = 'flex';
-}
-
-function closeScanModal() {
-  if (scanModal) scanModal.style.display = 'none';
-}
-
-window.onclick = function (event) {
-  if (event.target == scanModal) {
-    closeScanModal();
-  }
-};
-
-function triggerCamera() {
-  const cameraInput = document.getElementById('cameraInput');
-  if (cameraInput) cameraInput.click();
-}
-
-function triggerGallery() {
-  const galleryInput = document.getElementById('galleryInput');
-  if (galleryInput) galleryInput.click();
-}
+function triggerCamera() { document.getElementById('cameraInput').click(); }
+function triggerGallery() { document.getElementById('galleryInput').click(); }
 
 async function handleFileSelect(input) {
-  // Cek apakah user benar-benar memilih file
-  if (input.files && input.files[0]) {
-    const file = input.files[0];
+    if (input.files && input.files[0]) {
+        const file = input.files[0];
+        closeScanModal();
 
-    // 1. Tutup modal
-    closeScanModal();
+        const resultSection = document.getElementById('analysisResult');
+        const resultText = document.getElementById('resultText');
+        const previewImage = document.getElementById('previewImage');
 
-    // 2. Ambil elemen HTML
-    const resultSection = document.getElementById('analysisResult');
-    const resultText = document.getElementById('resultText');
-    const previewImage = document.getElementById('previewImage');
+        if(resultSection) resultSection.style.display = 'block';
+        if(previewImage) previewImage.src = URL.createObjectURL(file);
+        
+        // Scroll ke hasil
+        resultSection.scrollIntoView({ behavior: 'smooth', block: 'center' });
 
-    // 3. Munculkan Section Hasil
-    if (resultSection) resultSection.style.display = 'block';
-
-    // 4. Tampilkan Preview Gambar (FileReader)
-    const reader = new FileReader();
-    reader.onload = function (e) {
-      if (previewImage) previewImage.src = e.target.result;
-    };
-    reader.readAsDataURL(file);
-
-    // 5. Set Status Loading
-    if (resultText) {
-      resultText.innerHTML = '⏳ <b>Sedang menganalisis dengan AI...</b><br>Mohon tunggu sebentar';
-      resultText.style.color = '#666';
-    }
-
-    // 6. Scroll otomatis ke bagian hasil
-    if (resultSection) {
-      resultSection.scrollIntoView({ behavior: 'smooth', block: 'center' });
-    }
-
-    // ============================================================
-    // 7. INTEGRASI BACKEND
-    // ============================================================
-
-    const formData = new FormData();
-
-    formData.append('img_product', file);
-
-    // Ambil token dari login
-    const token = localStorage.getItem('token');
-
-    try {
-      const response = await fetch('http://localhost:8000/ai/', {
-        // Tambah slash di akhir biar aman
-        method: 'POST',
-        headers: {
-          Authorization: `Bearer ${token}`,
-          // Note: Jangan set 'Content-Type', biar browser yang atur boundary FormData
-        },
-        body: formData,
-      });
-
-      const data = await response.json();
-
-      if (response.ok) {
-        if (resultText) {
-          // Tampilkan hasil analisis
-          // Pastikan key 'analysis' sesuai dengan return backend: "analysis": answer["analysis"]
-          resultText.innerHTML = `✅ <b>Hasil Analisis:</b><br>${data.analysis}`;
-          resultText.style.color = '#333';
+        if(resultText) {
+            resultText.innerHTML = "⏳ <b>Sedang menganalisis...</b><br>Mohon tunggu sebentar";
+            resultText.style.color = "#666";
         }
-      } else {
-        if (resultText) {
-          // Tampilkan pesan error spesifik dari backend jika ada
-          const pesanError = data.detail || 'Terjadi kesalahan saat analisis.';
-          resultText.innerHTML = `❌ <b>Gagal:</b><br>${pesanError}`;
-          resultText.style.color = 'red';
-          console.error('Backend Error:', data);
+
+        const formData = new FormData();
+        formData.append('img_product', file);
+        const token = localStorage.getItem('token');
+
+        try {
+            const response = await fetch('http://localhost:8000/ai/', {
+                method: 'POST',
+                headers: { 'Authorization': `Bearer ${token}` },
+                body: formData 
+            });
+            
+            const data = await response.json();
+
+            if (response.ok) {
+                // 1. Tampilkan Hasil Analisis Teks
+                let formatted = formatAIResponse(data.analysis);
+                resultText.innerHTML = `✅ <b>Hasil Analisis:</b><br>${formatted}`;
+                resultText.style.color = ""; // Reset warna agar class CSS jalan
+
+                // 2. REFRESH RIWAYAT SCAN OTOMATIS 🔥
+                // Kita beri delay 1 detik agar database selesai menyimpan
+                setTimeout(() => {
+                    loadRiwayatFromBackend();
+                }, 1000);
+
+            } else {
+                resultText.innerHTML = `❌ Gagal: ${data.detail || "Error"}`;
+                resultText.style.color = "red";
+            }
+        } catch (error) {
+            console.error(error);
+            resultText.innerHTML = "❌ Error Koneksi Server";
+            resultText.style.color = "red";
         }
-      }
-    } catch (error) {
-      console.error('Error upload:', error);
-      if (resultText) {
-        resultText.innerHTML = '❌ <b>Error Koneksi:</b><br>Gagal menghubungi server.';
-        resultText.style.color = 'red';
-      }
     }
-  }
 }
 
 // =======================================================
-// 🛠️ FUNGSI FORMATTER TEXT (Markdown to HTML)
+// 5. HELPER LAINNYA (Render List & Format Teks)
 // =======================================================
-function formatAIResponse(text) {
-  if (!text) return '';
-
-  // 1. Ubah **Teks Tebal** menjadi <b>Teks Tebal</b>
-  let formatted = text.replace(/\*\*(.*?)\*\*/g, '<b>$1</b>');
-
-  // 2. Ubah *Teks Tebal* (format lain) menjadi <b>Teks Tebal</b>
-  formatted = formatted.replace(/\*(.*?)\*/g, '<b>$1</b>');
-
-  // 3. (Opsional) Beri warna pada kata "Halal" atau "Haram"
-  formatted = formatted.replace(/Halal/gi, '<span style="color: green; font-weight:bold;">Halal</span>');
-  formatted = formatted.replace(/Haram/gi, '<span style="color: red; font-weight:bold;">Haram</span>');
-
-  return formatted;
-}
-
-// ===================================================================
-//                          RIWAYAT SCAN (POSISI KIRIM FILE GAMBAR DIATAS)
-// ====================================================================
-// ===================================================================
-// //                          INIT SWIPER
-// // ===================================================================
-// window.onload = () => {
-//   const wrapper = document.querySelector('.swiper-wrapper');
-//   if (wrapper) {
-//     wrapper.innerHTML = ''; // kosongkan isi statis
-//   }
-
-//   // Inisialisasi Swiper
-//   window.myHistorySwiper = new Swiper('.myHistorySwiper', {
-//     slidesPerView: 1,
-//     spaceBetween: 10,
-//     pagination: {
-//       el: '.swiper-pagination',
-//       clickable: true,
-//     },
-//   });
-// };
-
-// // // ===================================================================
-// // //                          MODAL HANDLER
-// // // ===================================================================
-// function openScanModal() {
-//   document.getElementById('scanModal').style.display = 'block';
-// }
-// function closeScanModal() {
-//   document.getElementById('scanModal').style.display = 'none';
-// }
-// function triggerCamera() {
-//   document.getElementById('cameraInput').click();
-// }
-// function triggerGallery() {
-//   document.getElementById('galleryInput').click();
-// }
-// function handleFileSelect(input) {
-//   const file = input.files[0];
-//   if (file) {
-//     closeScanModal();
-//     kirimAnalisis(file);
-//   }
-// }
-
-// // // ===================================================================
-// // //                          KIRIM ANALISIS
-// // // ===================================================================
-// async function kirimAnalisis(file) {
-//   if (!file) {
-//     alert('Pilih file terlebih dahulu!');
-//     return;
-//   }
-
-//   const formData = new FormData();
-//   formData.append('img_product', file);
-
-//   const token = localStorage.getItem('token'); // pastikan token valid
-
-//   try {
-//     const response = await fetch('http://localhost:8000/ai/', {
-//       method: 'POST',
-//       headers: {
-//         Authorization: `Bearer ${token}`,
-//       },
-//       body: formData,
-//     });
-
-//     if (!response.ok) {
-//       throw new Error('Gagal analisis');
-//     }
-
-//     const result = await response.json();
-//     console.log('Hasil dari backend:', result); // debug
-//     tampilkanHasilAnalisis(result, file);
-//   } catch (err) {
-//     console.error(err);
-//     alert('Terjadi kesalahan saat analisis');
-//   }
-// }
-
-// // // ===================================================================
-// // //                          TAMPILKAN HASIL
-// // // ===================================================================
-// function tampilkanHasilAnalisis(result, file) {
-//   const previewImage = document.getElementById('previewImage');
-//   previewImage.src = result.imageUrl || URL.createObjectURL(file);
-
-//   const resultText = document.getElementById('resultText');
-//   resultText.textContent = result.analysis || 'Tidak ada hasil';
-
-//   document.getElementById('analysisResult').style.display = 'block';
-
-//   tambahRiwayatScan(result); // masukkan ke riwayat
-// }
-
-// // // ===================================================================
-// // //                          RIWAYAT SCAN
-// // // ===================================================================
-// function tambahRiwayatScan(result) {
-//   console.log('Memasukkan riwayat scan:');
-//   console.log('Nama produk:', result.response_json?.product_name);
-//   console.log('Rekomendasi:', result.response_json?.recommendation);
-//   console.log('Halal:', result.response_json?.halal_status);
-
-//   const wrapper = document.querySelector('.swiper-wrapper');
-//   if (!wrapper) {
-//     console.error('Elemen .swiper-wrapper tidak ditemukan');
-//     return;
-//   }
-
-//   const slide = document.createElement('div');
-//   slide.className = 'swiper-slide history-card';
-
-//   // Nama produk
-//   const title = document.createElement('h4');
-//   title.textContent = result.response_json?.product_name || 'Produk tidak teridentifikasi';
-
-//   // Rekomendasi produk
-//   const rekomendasi = document.createElement('p');
-//   rekomendasi.textContent = 'Rekomendasi: ' + (result.response_json?.recommendation || 'Netral');
-
-//   // Status halal
-//   const halal = document.createElement('p');
-//   halal.textContent = 'Status Halal: ' + (result.response_json?.halal_status || 'Unknown');
-
-//   slide.appendChild(title);
-//   slide.appendChild(rekomendasi);
-//   slide.appendChild(halal);
-//   wrapper.prepend(slide);
-
-//   if (window.myHistorySwiper && typeof window.myHistorySwiper.update === 'function') {
-//     window.myHistorySwiper.update();
-//   }
-// }
-
-// ===================================================================
-//                          END RIWAYAT SCAN
-// ====================================================================
-
-// ==================================================================
-//                          RIWAYAT SCAN (POSISI KIRIM FILE DI TENGAH)
-// ==================================================================
-// ===================================================================
-//                          INIT SWIPER
-// ===================================================================
-window.onload = () => {
-  const wrapper = document.querySelector('.swiper-wrapper');
-  if (wrapper) {
-    wrapper.innerHTML = ''; // kosongkan isi statis
-  }
-
-  // Inisialisasi Swiper
-  window.myHistorySwiper = new Swiper('.myHistorySwiper', {
-    slidesPerView: 1,
-    spaceBetween: 10,
-    pagination: {
-      el: '.swiper-pagination',
-      clickable: true,
-    },
-  });
-
-  // Load riwayat dari localStorage
-  const saved = localStorage.getItem('riwayatScan');
-  if (saved) {
-    try {
-      const parsed = JSON.parse(saved);
-      if (Array.isArray(parsed)) {
-        renderRiwayat(parsed);
-      }
-    } catch (e) {
-      console.error('Gagal parse riwayat:', e);
+function renderListLimit(containerId, buttonId, dataString) {
+    const container = document.getElementById(containerId);
+    const button = document.getElementById(buttonId);
+    if (!container || !button) return;
+    
+    container.innerHTML = '';
+    
+    if (!dataString || dataString === 'null' || dataString === '-' || dataString === '') {
+        container.innerHTML = '<span class="value-large">-</span>';
+        button.style.display = 'none';
+        return;
     }
-  }
-};
 
-// ===================================================================
-//                          MODAL HANDLER
-// ===================================================================
-function openScanModal() {
-  // gunakan flex agar tetap di tengah
-  document.getElementById('scanModal').style.display = 'flex';
-}
-function closeScanModal() {
-  document.getElementById('scanModal').style.display = 'none';
-}
-function triggerCamera() {
-  document.getElementById('cameraInput').click();
-}
-function triggerGallery() {
-  document.getElementById('galleryInput').click();
-}
-function handleFileSelect(input) {
-  const file = input.files[0];
-  if (file) {
-    closeScanModal();
-    kirimAnalisis(file);
-  }
-}
-
-// ===================================================================
-//                          KIRIM ANALISIS
-// ===================================================================
-async function kirimAnalisis(file) {
-  if (!file) {
-    alert('Pilih file terlebih dahulu!');
-    return;
-  }
-
-  const formData = new FormData();
-  formData.append('img_product', file);
-
-  const token = localStorage.getItem('token'); // pastikan token valid
-
-  try {
-    const response = await fetch('http://localhost:8000/ai/', {
-      method: 'POST',
-      headers: {
-        Authorization: `Bearer ${token}`,
-      },
-      body: formData,
+    const items = dataString.split(',').map(item => item.trim()).filter(i => i);
+    items.forEach((itemText, index) => {
+        const div = document.createElement('div');
+        div.className = 'list-item';
+        div.innerText = itemText;
+        if (index >= 3) div.classList.add('hidden-item');
+        container.appendChild(div);
     });
 
-    if (!response.ok) {
-      throw new Error('Gagal analisis');
+    if (items.length > 3) {
+        button.style.display = 'inline';
+        button.innerText = 'Show all';
+        
+        const newBtn = button.cloneNode(true);
+        button.parentNode.replaceChild(newBtn, button);
+        
+        newBtn.addEventListener('click', (e) => {
+            e.preventDefault();
+            const hiddenItems = container.querySelectorAll('.hidden-item, .revealed-item');
+            const isExpanding = newBtn.innerText === 'Show all';
+            hiddenItems.forEach(item => {
+                if (isExpanding) {
+                    item.classList.remove('hidden-item');
+                    item.classList.add('revealed-item');
+                } else {
+                    item.classList.add('hidden-item');
+                    item.classList.remove('revealed-item');
+                }
+            });
+            newBtn.innerText = isExpanding ? 'Show less' : 'Show all';
+        });
+    } else {
+        button.style.display = 'none';
     }
-
-    const result = await response.json();
-    console.log('Hasil dari backend:', result); // debug
-    tampilkanHasilAnalisis(result, file);
-  } catch (err) {
-    console.error(err);
-    alert('Terjadi kesalahan saat analisis');
-  }
 }
 
-// ===================================================================
-//                          TAMPILKAN HASIL
-// ===================================================================
-function tampilkanHasilAnalisis(result, file) {
-  const previewImage = document.getElementById('previewImage');
-  previewImage.src = result.imageUrl || URL.createObjectURL(file);
-
-  const resultText = document.getElementById('resultText');
-  resultText.textContent = result.analysis || 'Tidak ada hasil';
-
-  document.getElementById('analysisResult').style.display = 'block';
-
-  tambahRiwayatScan(result); // masukkan ke riwayat
+function formatAIResponse(text) {
+    if (!text) return "";
+    let formatted = text.replace(/\*\*(.*?)\*\*/g, '<b>$1</b>');
+    formatted = formatted.replace(/\*(.*?)\*/g, '<b>$1</b>');
+    formatted = formatted.replace(/Halal/gi, '<span class="status-green">Halal</span>');
+    formatted = formatted.replace(/Haram/gi, '<span class="status-red">Haram</span>');
+    formatted = formatted.replace(/Tidak disarankan/gi, '<span class="status-red">Tidak disarankan</span>');
+    formatted = formatted.replace(/Direkomendasikan/gi, '<span class="status-green">Direkomendasikan</span>');
+    return formatted;
 }
-
-// ===================================================================
-//                          RIWAYAT SCAN
-// ===================================================================
-function tambahRiwayatScan(result) {
-  let riwayatData = JSON.parse(localStorage.getItem('riwayatScan')) || [];
-  riwayatData.unshift(result);
-  localStorage.setItem('riwayatScan', JSON.stringify(riwayatData));
-
-  renderRiwayat(riwayatData);
-}
-
-function renderRiwayat(riwayatData) {
-  const wrapper = document.querySelector('.swiper-wrapper');
-  if (!wrapper) {
-    console.error('Elemen .swiper-wrapper tidak ditemukan');
-    return;
-  }
-
-  wrapper.innerHTML = '';
-
-  for (let i = 0; i < riwayatData.length; i += 4) {
-    const slide = document.createElement('div');
-    slide.className = 'swiper-slide';
-
-    for (let j = 0; j < 4; j++) {
-      const data = riwayatData[i + j];
-      if (data) {
-        const card = document.createElement('div');
-        card.className = 'history-card';
-
-        const title = document.createElement('h4');
-        title.textContent = data.response_json?.product_name || 'Produk tidak teridentifikasi';
-
-        const rekomendasi = document.createElement('p');
-        rekomendasi.textContent = 'Rekomendasi: ' + (data.response_json?.recommendation || 'Netral');
-
-        const halal = document.createElement('p');
-        halal.textContent = 'Status Halal: ' + (data.response_json?.halal_status || 'Unknown');
-
-        card.appendChild(title);
-        card.appendChild(rekomendasi);
-        card.appendChild(halal);
-
-        slide.appendChild(card);
-      }
-    }
-
-    wrapper.appendChild(slide);
-  }
-
-  if (window.myHistorySwiper && typeof window.myHistorySwiper.update === 'function') {
-    window.myHistorySwiper.update();
-  }
-}
-
-// ==================================================================
-//                        END RIWAYAT SCAN
-// ==================================================================
