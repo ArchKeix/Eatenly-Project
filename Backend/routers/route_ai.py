@@ -161,7 +161,7 @@ async def set_ai(
 #             "data": data_to_save,
 #         }
 
-# --- TAMBAHAN BARU: Endpoint untuk mengambil riwayat scan ---
+# --- Endpoint untuk mengambil riwayat scan ---
 @router_ai.get("/history")
 async def get_history(Authorization: str = Header(None)):
     
@@ -178,8 +178,6 @@ async def get_history(Authorization: str = Header(None)):
 
     # 2. Ambil data dari MongoDB
     # - Filter berdasarkan id_user
-    # - Sortir berdasarkan tanggal (terbaru diatas) -1 artinya DESCENDING
-    # - Limit 20 data saja agar loading tidak berat (opsional)
     
     cursor = riwayat_analisis_collection.find({"id_user": id_user}).sort("tanggal_analisis", -1).limit(20)
     
