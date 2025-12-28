@@ -1,15 +1,16 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Dashboard - Eatenly</title>
-    
+
     <link rel="stylesheet" href="../css/style.css">
-    
+
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
-    
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.css"/>
+
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.css" />
 </head>
 
 <body>
@@ -19,19 +20,19 @@
             <h3>EATENLY</h3>
             <a href="../../index.html" class="logout-link">Keluar</a>
         </div>
-        
+
         <div class="welcome-text">
             <h1>Hi, Selamat Datang <span id="displayNamaHeader">User</span> Di Eatenly</h1>
             <p>Bantu kamu pilih makanan</p>
         </div>
-        
+
         <div class="header-help">
             <p>Have a problem? <a href="#">Help</a></p>
         </div>
     </section>
 
     <section class="dashboard-content">
-        
+
         <div class="section-title">
             <h3>Personalisasi mu</h3>
             <a href="personalisasi.html">Edit personalisasi</a>
@@ -80,37 +81,37 @@
 
         <div class="history-section">
             <h3>Riwayat scan</h3>
-            
+
             <div class="history-container">
                 <div class="swiper myHistorySwiper">
                     <div class="swiper-wrapper">
-                        <div class="swiper-slide history-card">
+                        <!-- <div class="swiper-slide history-card">
                             <h4>Bengbeng 1</h4>
                             <p>Makanan ini baik karena rasanya manis...</p>
-                        </div>
-                        <div class="swiper-slide history-card">
+                        </div> -->
+                        <!-- <div class="swiper-slide history-card">
                             <h4>Chitato 2</h4>
                             <p>Kurangi konsumsi karena mengandung MSG...</p>
-                        </div>
-                        <div class="swiper-slide history-card">
+                        </div> -->
+                        <!-- <div class="swiper-slide history-card">
                             <h4>Oreo 3</h4>
                             <p>Kandungan gula cukup tinggi...</p>
-                        </div>
-                        <div class="swiper-slide history-card">
+                        </div> -->
+                        <!-- <div class="swiper-slide history-card">
                             <h4>Pocky 4</h4>
                             <p>Cukup aman untuk camilan ringan...</p>
-                        </div>
-                        <div class="swiper-slide history-card">
+                        </div> -->
+                        <!-- <div class="swiper-slide history-card">
                             <h4>Taro 5</h4>
                             <p>Mengandung banyak natrium...</p>
-                        </div>
-                        <div class="swiper-slide history-card">
+                        </div> -->
+                        <!-- <div class="swiper-slide history-card">
                             <h4>Silverqueen 6</h4>
                             <p>Coklat mengandung kalori tinggi...</p>
-                        </div>
-                        
+                        </div> -->
+
                     </div>
-                    
+
                     <div class="swiper-pagination"></div>
                 </div>
             </div>
@@ -120,9 +121,14 @@
 
     <button class="fab-camera" onclick="openScanModal()">
         <svg width="30" height="30" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-            <path d="M12 12C14.7614 12 17 9.76142 17 7C17 4.23858 14.7614 2 12 2C9.23858 2 7 4.23858 7 7C7 9.76142 9.23858 12 12 12Z" fill="white" fill-opacity="0"/>
-            <path d="M20 4H16.83L15.12 2.17C14.93 1.96 14.66 1.85 14.39 1.86H9.61C9.34 1.86 9.07 1.97 8.88 2.17L7.17 4H4C2.9 4 2 4.9 2 6V18C2 19.1 2.9 20 4 20H20C21.1 20 22 19.1 22 18V6C22 4.9 21.1 4 20 4ZM12 17C9.24 17 7 14.76 7 12C7 9.24 9.24 7 12 7C14.76 7 17 9.24 17 12C17 14.76 14.76 17 12 17Z" fill="white"/>
-            <path d="M12 9C10.34 9 9 10.34 9 12C9 13.66 10.34 15 12 15C13.66 15 15 13.66 15 12C15 10.34 13.66 9 12 9Z" fill="white"/>
+            <path
+                d="M12 12C14.7614 12 17 9.76142 17 7C17 4.23858 14.7614 2 12 2C9.23858 2 7 4.23858 7 7C7 9.76142 9.23858 12 12 12Z"
+                fill="white" fill-opacity="0" />
+            <path
+                d="M20 4H16.83L15.12 2.17C14.93 1.96 14.66 1.85 14.39 1.86H9.61C9.34 1.86 9.07 1.97 8.88 2.17L7.17 4H4C2.9 4 2 4.9 2 6V18C2 19.1 2.9 20 4 20H20C21.1 20 22 19.1 22 18V6C22 4.9 21.1 4 20 4ZM12 17C9.24 17 7 14.76 7 12C7 9.24 9.24 7 12 7C14.76 7 17 9.24 17 12C17 14.76 14.76 17 12 17Z"
+                fill="white" />
+            <path d="M12 9C10.34 9 9 10.34 9 12C9 13.66 10.34 15 12 15C13.66 15 15 13.66 15 12C15 10.34 13.66 9 12 9Z"
+                fill="white" />
         </svg>
     </button>
 
@@ -142,11 +148,13 @@
         </div>
     </div>
 
-    <input type="file" id="cameraInput" accept="image/*" capture="environment" style="display: none;" onchange="handleFileSelect(this)">
+    <input type="file" id="cameraInput" accept="image/*" capture="environment" style="display: none;"
+        onchange="handleFileSelect(this)">
     <input type="file" id="galleryInput" accept="image/*" style="display: none;" onchange="handleFileSelect(this)">
 
     <script src="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.js"></script>
     <script src="../js/dashboard.js"></script>
 
 </body>
+
 </html>
