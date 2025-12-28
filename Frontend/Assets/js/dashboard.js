@@ -17,7 +17,7 @@ document.addEventListener('DOMContentLoaded', () => {
     // Fungsi ini akan mengisi data dari LocalStorage dulu, lalu update dari Backend
     loadUserData(idUser);
 
-    // C. LOAD RIWAYAT SCAN (DARI DATABASE) 🔥
+    // C. LOAD RIWAYAT SCAN (DARI DATABASE)
     loadRiwayatFromBackend();
 
     // D. LOGOUT LISTENER
@@ -219,7 +219,7 @@ async function handleFileSelect(input) {
                 resultText.innerHTML = `✅ <b>Hasil Analisis:</b><br>${formatted}`;
                 resultText.style.color = ""; // Reset warna agar class CSS jalan
 
-                // 2. REFRESH RIWAYAT SCAN OTOMATIS 🔥
+                // 2. REFRESH RIWAYAT SCAN OTOMATIS 
                 // Kita beri delay 1 detik agar database selesai menyimpan
                 setTimeout(() => {
                     loadRiwayatFromBackend();
