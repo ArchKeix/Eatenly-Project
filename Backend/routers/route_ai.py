@@ -161,14 +161,15 @@ async def set_ai(
 #             "data": data_to_save,
 #         }
 
+
 # --- TAMBAHAN BARU: Endpoint untuk mengambil riwayat scan ---
 @router_ai.get("/history")
 async def get_history(Authorization: str = Header(None)):
-    
+
     # 1. Cek Token (Sama seperti fungsi POST)
     if not Authorization:
         raise HTTPException(status_code=401, detail="Token diperlukan")
-    
+
     token = Authorization.split(" ")[1]
     try:
         decoded = jwt.decode(token, SECRET_KEY, algorithms=[ALGORITHM])
@@ -180,9 +181,13 @@ async def get_history(Authorization: str = Header(None)):
     # - Filter berdasarkan id_user
     # - Sortir berdasarkan tanggal (terbaru diatas) -1 artinya DESCENDING
     # - Limit 20 data saja agar loading tidak berat (opsional)
-    
-    cursor = riwayat_analisis_collection.find({"id_user": id_user}).sort("tanggal_analisis", -1).limit(20)
-    
+
+    cursor = (
+        riwayat_analisis_collection.find({"id_user": id_user})
+        .sort("tanggal_analisis", -1)
+        .limit(20)
+    )
+
     riwayat_list = []
     async for document in cursor:
         # Hapus _id (ObjectID Mongo) karena tidak bisa di-convert ke JSON langsung
