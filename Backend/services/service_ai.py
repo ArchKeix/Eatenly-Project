@@ -10,7 +10,6 @@ import os
 import base64
 import re
 import io
-import json
 
 # ----------------------------------------------------------------------- #
 
@@ -84,7 +83,7 @@ async def AI_Analyst(img_product: bytes, personalize: str) -> str:
     # Inisialisasi model
     model = ChatGoogleGenerativeAI(
         model="gemini-2.5-flash",
-        temperature=0.6,
+        temperature=0.5,
         max_output_tokens=4500,
     )
 
