@@ -58,6 +58,7 @@ numpy==2.3.4
 orjson==3.11.4
 ormsgpack==1.11.0
 packaging==25.0
+passlib[bcrypt]
 pandas==2.3.3
 pillow==12.0.0
 plotly==6.3.1
